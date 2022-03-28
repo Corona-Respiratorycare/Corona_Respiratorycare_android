@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "592288651608",
+    "project_id": "coronarespiratorycare",
+    "storage_bucket": "coronarespiratorycare.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:592288651608:android:d2de3605c25b85fd78ed2d",
+        "android_client_info": {
+          "package_name": "com.covidproject.covid_respiratorycare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "592288651608-hk1tbskhd19rjlfrob64bvut6svvo8pp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.covidproject.covid_respiratorycare",
+            "certificate_hash": "f94098020400544c493b9832152288e3440f2293"
+          }
+        },
+        {
+          "client_id": "592288651608-v82436qf2a92ut5min1b2gqncda86fb3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvcykrjSOZJdrLEJENiH5q2xu4gpXlnwY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "592288651608-v82436qf2a92ut5min1b2gqncda86fb3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
