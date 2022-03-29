@@ -2,8 +2,8 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'com.google.gms.google-services'
     id 'kotlin-android-extensions'
+    id 'com.google.gms.google-services'
 }
 //apply plugin: 'com.android.application'
 //apply plugin: 'com.google.gms.google-services'  // Google Services plugin
@@ -35,8 +35,8 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    buildFeatures {
-        viewBinding true
+    viewBinding {
+        enabled = true
     }
 }
 

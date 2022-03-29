@@ -4,17 +4,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ui.main.MainActivity">
 
-    <com.naver.maps.map.MapView
-        android:id="@+id/mapView"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <FrameLayout
+        android:id="@+id/main_fragment_container"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_width="match_parent"
+        app:layout_constraintBottom_toTopOf="@+id/main_bottomnavi"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <!--    <androidx.fragment.app.FragmentContainerView-->
+    <!--        android:id="@+id/nav_host_fragment_container2"-->
+    <!--        android:name="androidx.navigation.fragment.NavHostFragment"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:fadingEdgeLength="0dp"-->
+    <!--        app:defaultNavHost="true"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:layout_constraintVertical_weight="1"-->
+    <!--        app:navGraph="@navigation/nav_graph" />-->
+
+    <!--    <androidx.viewpager2.widget.ViewPager2-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:id="@+id/main_layout_container"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintBottom_toTopOf="@+id/main_bottomnavi"-->
+    <!--        />-->
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/main_bottomnavi"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/navi_menu" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

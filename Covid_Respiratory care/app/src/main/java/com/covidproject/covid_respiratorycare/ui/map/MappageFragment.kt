@@ -1,41 +1,45 @@
-package com.covidproject.covid_respiratorycare
+package com.covidproject.covid_respiratorycare.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.PointF
-import android.location.*
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
-import com.covidproject.covid_respiratorycare.databinding.ActivityMainBinding
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
+import com.covidproject.covid_respiratorycare.R
+import com.covidproject.covid_respiratorycare.data.Hospitaldata
+import com.covidproject.covid_respiratorycare.ui.BaseFragment
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
-import com.naver.maps.map.NaverMap
+import com.naver.maps.map.MapFragment.newInstance
 import com.naver.maps.map.OnMapReadyCallback
-import java.util.*
-import kotlin.collections.ArrayList
-import androidx.core.app.ActivityCompat
-import androidx.lifecycle.MutableLiveData
-import com.covidproject.covid_respiratorycare.data.Hospitaldata
-import com.google.android.gms.location.LocationServices
-import com.google.firebase.database.*
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
-import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.MarkerIcons
-import java.lang.Thread.sleep
+import androidx.fragment.app.FragmentManager
+import com.covidproject.covid_respiratorycare.databinding.FragmentMappageBinding
+import com.google.firebase.database.*
+import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var binding: ActivityMainBinding
+class MappageFragment : Fragment(),
+    OnMapReadyCallback {
+
     private lateinit var naverMap : NaverMap
     private var latitude : Double = 0.0
     private var longitude  : Double = 0.0
@@ -53,24 +57,28 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var isgpson: MutableLiveData<Boolean> = MutableLiveData()
     private var isgpsondata = false
     private val gpsthread = GpsThread()
+    private lateinit var binding : FragmentMappageBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // LiveData의 value의 변경을 감지하고 호출
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentMappageBinding.inflate(layoutInflater)
+
+        binding.mapView.onCreate(savedInstanceState)
+        binding.mapView.getMapAsync(this)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         isgpson.observe(this, androidx.lifecycle.Observer {
             isgpsondata = it
         })
         gpsthread.start()
-
         tedPermission()
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        binding.mapView.onCreate(savedInstanceState)
-        binding.mapView.getMapAsync(this)
-        database = FirebaseDatabase.getInstance().reference
 
         //현재위치 가져오기
         getLastKnownLocation()
+        database = FirebaseDatabase.getInstance().reference
 
         //토탈카운트 들고오기
         database.child("response").child("body").child("totalCount").get().addOnSuccessListener {
@@ -79,14 +87,51 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }.addOnFailureListener{
         }
 
-        setContentView(binding.root)
+
+        return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        binding.mapView.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.mapView.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.mapView.onPause()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        binding.mapView.onSaveInstanceState(outState)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        binding.mapView.onStop()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.mapView.onDestroy()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        binding.mapView.onLowMemory()
     }
 
     private fun SetHospitalDatabase() {
         hospitaldata = ArrayList<Hospitaldata>()
         //경우에 따라 서버의 업데이트된 값을 확인하는 대신 로컬 캐시의 값을 즉시 반환하고 싶을 수 있습니다.
         // 이 경우에는 addListenerForSingleValueEvent을 사용하여 로컬 디스크 캐시에서 데이터를 즉시 가져올 수 있습니다.
-        database.child("response").child("body").child("items").child("item").addListenerForSingleValueEvent(object: ValueEventListener {
+        database.child("response").child("body").child("items").child("item").addListenerForSingleValueEvent(object:
+            ValueEventListener {
             override fun onDataChange(it: DataSnapshot) {
                 for (i in 0 until totalcount) {
                     hospitaldata.add(
@@ -112,7 +157,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
 //                1) 위도만 0.01바꾸었을 경우 거리  1110m 정도 바뀜 latitude 위도
 //                2) 경도만 0.01바꾸었을 경우 거리  890m 정도 바뀜
-//                val startTime = System.currentTimeMillis()
                 for (i in hospitaldata){
                     if(i.YPosWgs84 == "null" || i.XPosWgs84 == "null"){
                         continue
@@ -122,8 +166,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         setMarker(i.YPosWgs84!!.toDouble(),i.XPosWgs84!!.toDouble(),i.yadmNm,i.addr,i.ratPsblYn,i.pcrPsblYn)
                     }
                 }
-//                val endTime = System.currentTimeMillis()
-//                Log.d("test",startTime.toString()+"   "+endTime.toString())
                 naverMap.setOnMapClickListener { pointF: PointF, latLng: LatLng ->
                     for (i in infoWindowlist){
                         i.close()
@@ -167,10 +209,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     @SuppressLint("LongLogTag")
     fun getLastKnownLocation() {
         if (ActivityCompat.checkSelfPermission(
-                this,
+                requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
+                requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -197,7 +239,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(p0: NaverMap) {
         naverMap = p0
 //        naverMap.maxZoom = 18.0
-//        naverMap.
         naverMap.minZoom = 10.0
         isgpson.value = true
     }
@@ -219,7 +260,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         //정보창
         val infoWindow = InfoWindow()
-        infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(this) {
+        infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
             override fun getText(infoWindow: InfoWindow): CharSequence {
                 return "주소 : $addr\nRAT가능여부 $ratPsblYn\nPCR가능여부$pcrPsblYn"
             }
@@ -236,14 +277,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             true
         }
-        naverMap.setOnMapClickListener { pointF, latLng ->
-            infoWindow.close()
-        }
-        infoWindowlist.add(infoWindow)
-        marker.onClickListener = listener
+        if (naverMap!=null){
+            naverMap.setOnMapClickListener { pointF, latLng ->
+                infoWindow.close()
+            }
+            infoWindowlist.add(infoWindow)
+            marker.onClickListener = listener
 
-        //네이버맵 적용
-        marker.map = naverMap
+            //네이버맵 적용
+            marker.map = naverMap
+        }
     }
 
     private fun tedPermission() {
@@ -251,10 +294,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onPermissionGranted() {}
             override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
                 Log.d("test0","설정에서 권한을 허가 해주세요.")
-                finish()
+                //todo
             }
         }
-        TedPermission.with(this)
+        TedPermission.with(requireContext())
             .setPermissionListener(permissionListener)
             .setRationaleMessage("서비스 사용을 위해서 몇가지 권한이 필요합니다.")
             .setDeniedMessage("[설정] > [권한] 에서 권한을 설정할 수 있습니다.")

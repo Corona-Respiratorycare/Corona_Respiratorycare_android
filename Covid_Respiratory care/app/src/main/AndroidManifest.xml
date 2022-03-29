@@ -19,7 +19,7 @@
             android:value="gi0qse5ddg" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Covid_Respiratorycare.NoActionBar">
@@ -29,6 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
