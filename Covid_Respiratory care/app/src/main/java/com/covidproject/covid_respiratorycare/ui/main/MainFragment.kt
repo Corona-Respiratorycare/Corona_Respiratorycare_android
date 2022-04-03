@@ -5,13 +5,18 @@ import android.os.Bundle
 import com.covidproject.covid_respiratorycare.databinding.FragmentMainBinding
 import com.covidproject.covid_respiratorycare.ui.BaseFragment
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.*
+import android.graphics.DashPathEffect
+
+import com.github.mikephil.charting.data.LineDataSet
+
+
+
 
 class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::inflate) {
 
@@ -19,26 +24,53 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
 //        showBarChart()
         setWeek(binding.mainDailyGraph)
         binding.mainDailyGraph.setBackgroundColor(Color.WHITE)
+        binding.mainDailyGraph.axisRight.isEnabled = false
     }
     private fun showBarChart() {
         val valueList = ArrayList<Double>()
-        val entries: ArrayList<BarEntry> = ArrayList()
+        val entries: ArrayList<Entry> = ArrayList()
         val title = "확진자 수"
 
         //input data
-        for (i in 1..7) {
+        for (i in 1..8) {
             valueList.add(i * 100.1)
         }
 
         //fit the data into a bar
         for (i in 0 until valueList.size) {
-            val barEntry = BarEntry(i.toFloat(), valueList[i].toFloat())
+            val barEntry = Entry(i.toFloat(), valueList[i].toFloat())
             entries.add(barEntry)
         }
-        val barDataSet = BarDataSet(entries, title)
-        val data = BarData(barDataSet)
-        binding.mainDailyGraph.setData(data)
-        binding.mainDailyGraph.invalidate()
+        val linChartDataset = LineDataSet(entries, title)
+        val data = LineData(linChartDataset)
+        binding.mainDailyGraph2.setData(data)
+//        binding.mainDailyGraph2.setBackgroundColor(Color.WHITE)
+//        var xAxis = binding.mainDailyGraph2.xAxis
+//        xAxis.setLabelCount(10, true); //X축의 데이터를 최대 몇개 까지 나타낼지에 대한 설정 5개 force가 true 이면 반드시 보여줌
+//        xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE); //x 축 표시에 대한 위치 설정
+//        xAxis.mLabelWidth = 5
+//        xAxis.mAxisMaximum = 7F
+
+//        linChartDataset = LineDataSet(values, "Sample Data")
+//        linChartDataset.setDrawIcons(false)
+//        linChartDataset.enableDashedLine(10f, 5f, 0f)
+//        linChartDataset.enableDashedHighlightLine(10f, 5f, 0f)
+//        linChartDataset.setColor(Color.DKGRAY)
+//        linChartDataset.setCircleColor(Color.DKGRAY)
+//        linChartDataset.setLineWidth(1f)
+//        linChartDataset.setCircleRadius(3f)
+//        linChartDataset.setDrawCircleHole(false)
+//        linChartDataset.setValueTextSize(9f)
+//        linChartDataset.setDrawFilled(true)
+//        linChartDataset.setFormLineWidth(1f)
+//        linChartDataset.setFormLineDashEffect(DashPathEffect(floatArrayOf(10f, 5f), 0f))
+//        linChartDataset.setFormSize(15f)
+//
+//        xAxis.mAxisMinimum = 1F
+//        xAxis.setAvoidFirstLastClipping(false)
+        binding.mainDailyGraph2.axisRight.isEnabled = false
+        binding.mainDailyGraph2.axisLeft.isEnabled = false
+        binding.mainDailyGraph2.invalidate()
     }
 
     private fun initBarDataSet(barDataSet: BarDataSet) {
@@ -61,7 +93,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         val title = "확진자 수"
 
         //input data
-        for (i in 0..5) {
+        for (i in 1..8) {
             valueList.add(i * 100.1)
         }
 
@@ -93,14 +125,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         barChart.animateY(1000)
         barChart.animateX(1000)
 
-
         //바텀 좌표 값
         val xAxis: XAxis = barChart.getXAxis()
         //change the position of x-axis to the bottom
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         //set the horizontal distance of the grid line
         xAxis.granularity = 1f
-        xAxis.textColor = Color.RED
+        xAxis.textColor = Color.BLACK
         //hiding the x-axis line, default true if not set
         xAxis.setDrawAxisLine(false)
         //hiding the vertical grid lines, default true if not set
@@ -110,13 +141,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         //좌측 값 hiding the left y-axis line, default true if not set
         val leftAxis: YAxis = barChart.getAxisLeft()
         leftAxis.setDrawAxisLine(false)
-        leftAxis.textColor = Color.RED
+        leftAxis.textColor = Color.BLACK
 
 
         //우측 값 hiding the right y-axis line, default true if not set
         val rightAxis: YAxis = barChart.getAxisRight()
-        rightAxis.setDrawAxisLine(false)
-        rightAxis.textColor = Color.RED
+        rightAxis.setDrawAxisLine(true)
+        rightAxis.textColor = Color.BLACK
 
 
         //바차트의 타이틀
@@ -125,14 +156,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         legend.form = Legend.LegendForm.LINE
         //setting the text size of the legend
         legend.textSize = 11f
-        legend.textColor = Color.YELLOW
+        legend.textColor = Color.BLUE
         //setting the alignment of legend toward the chart
         legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
-        legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+//        legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
         //setting the stacking direction of legend
         legend.orientation = Legend.LegendOrientation.HORIZONTAL
         //setting the location of legend outside the chart, default false if not set
-        legend.setDrawInside(false)
+        legend.setDrawInside(true)
     }
 
 }

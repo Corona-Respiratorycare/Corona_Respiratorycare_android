@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
-import com.covidproject.covid_respiratorycare.R
 import com.covidproject.covid_respiratorycare.data.Hospitaldata
 import com.covidproject.covid_respiratorycare.ui.BaseFragment
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -31,14 +30,23 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.MarkerIcons
 import androidx.fragment.app.FragmentManager
+import com.covidproject.covid_respiratorycare.data.HospitalDatabase
 import com.covidproject.covid_respiratorycare.databinding.FragmentMappageBinding
+import com.covidproject.covid_respiratorycare.ui.Service.mapping.HospitalInfo
+import com.covidproject.covid_respiratorycare.ui.Service.mapping.MappingService
+import com.covidproject.covid_respiratorycare.ui.Service.mapping.MappingView
 import com.google.firebase.database.*
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class MappageFragment : Fragment(),
-    OnMapReadyCallback {
+    OnMapReadyCallback, MappingView {
+
+    lateinit var hospitalDB: HospitalDatabase
 
     private lateinit var naverMap : NaverMap
     private var latitude : Double = 0.0
@@ -59,13 +67,14 @@ class MappageFragment : Fragment(),
     private val gpsthread = GpsThread()
     private lateinit var binding : FragmentMappageBinding
 
+    private val mappingService = MappingService()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMappageBinding.inflate(layoutInflater)
-
         binding.mapView.onCreate(savedInstanceState)
         binding.mapView.getMapAsync(this)
 
@@ -73,6 +82,7 @@ class MappageFragment : Fragment(),
         isgpson.observe(this, androidx.lifecycle.Observer {
             isgpsondata = it
         })
+
         gpsthread.start()
         tedPermission()
 
@@ -81,12 +91,18 @@ class MappageFragment : Fragment(),
         database = FirebaseDatabase.getInstance().reference
 
         //토탈카운트 들고오기
-        database.child("response").child("body").child("totalCount").get().addOnSuccessListener {
-            totalcount = Integer.parseInt(it.value as String)
-            SetHospitalDatabase()
-        }.addOnFailureListener{
-        }
+//        database.child("response").child("body").child("totalCount").get().addOnSuccessListener {
+//            totalcount = Integer.parseInt(it.value as String)
+//            SetHospitalDatabase()
+//        }.addOnFailureListener{
+//        }
 
+        hospitalDB = HospitalDatabase.getInstance(requireContext())!!
+        hospitalDB.HospitalInfoDao().deleteAllHospital()
+        mappingService.setmappingView(this)
+        CoroutineScope(Dispatchers.IO).launch {
+            mappingService.getHospitalInfo()
+        }
 
         return binding.root
     }
@@ -327,5 +343,18 @@ class MappageFragment : Fragment(),
                 }
             }
         }
+    }
+
+    override fun onMappingLoading() {
+    }
+
+    override fun onMappingSuccess(hospitalList: List<HospitalInfo>) {
+        for(i in hospitalList){
+            hospitalDB.HospitalInfoDao().insert(i)
+        }
+        Log.d("test",hospitalDB.HospitalInfoDao().getallHospital().toString())
+    }
+
+    override fun onMappingFailure(code: Int, message: String) {
     }
 }
