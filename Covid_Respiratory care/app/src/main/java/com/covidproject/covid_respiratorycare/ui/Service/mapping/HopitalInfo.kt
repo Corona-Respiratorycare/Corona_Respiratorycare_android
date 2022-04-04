@@ -29,3 +29,13 @@ data class HospitalInfo(
 ){
     @PrimaryKey(autoGenerate = true) var id : Int = 0
 }
+
+data class UpdateDataResult(
+    @SerializedName("code")val code: Int,
+    @SerializedName("message")val message: String,
+    @SerializedName("result")val updatedate: UpdateDate
+)
+
+data class UpdateDate(
+    @SerializedName("updated_date")val updated_date: String
+)

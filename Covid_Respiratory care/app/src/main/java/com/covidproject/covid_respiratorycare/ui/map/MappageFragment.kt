@@ -44,10 +44,9 @@ import kotlinx.coroutines.launch
 
 
 class MappageFragment : Fragment(),
-    OnMapReadyCallback, MappingView {
+    OnMapReadyCallback {
 
     lateinit var hospitalDB: HospitalDatabase
-
     private lateinit var naverMap : NaverMap
     private var latitude : Double = 0.0
     private var longitude  : Double = 0.0
@@ -84,7 +83,7 @@ class MappageFragment : Fragment(),
         })
 
         gpsthread.start()
-        tedPermission()
+//        tedPermission()
 
         //현재위치 가져오기
         getLastKnownLocation()
@@ -98,11 +97,10 @@ class MappageFragment : Fragment(),
 //        }
 
         hospitalDB = HospitalDatabase.getInstance(requireContext())!!
-        hospitalDB.HospitalInfoDao().deleteAllHospital()
-        mappingService.setmappingView(this)
-        CoroutineScope(Dispatchers.IO).launch {
-            mappingService.getHospitalInfo()
-        }
+//        mappingService.setmappingView(this)
+//        CoroutineScope(Dispatchers.IO).launch {
+//            mappingService.getHospitalInfo()
+//        }
 
         return binding.root
     }
@@ -119,7 +117,7 @@ class MappageFragment : Fragment(),
 
     override fun onPause() {
         super.onPause()
-        binding.mapView.onPause()
+//        binding.mapView.onPause()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -129,7 +127,7 @@ class MappageFragment : Fragment(),
 
     override fun onStop() {
         super.onStop()
-        binding.mapView.onStop()
+//        binding.mapView.onStop()
     }
 
     override fun onDestroyView() {
@@ -179,7 +177,7 @@ class MappageFragment : Fragment(),
                     }
                     if( latitude-0.05 <= i.YPosWgs84!!.toDouble()  && i.YPosWgs84!!.toDouble() <= latitude+0.05 &&
                         longitude-0.05 <= i.XPosWgs84!!.toDouble() && i.XPosWgs84!!.toDouble() <= longitude+0.05){
-                        setMarker(i.YPosWgs84!!.toDouble(),i.XPosWgs84!!.toDouble(),i.yadmNm,i.addr,i.ratPsblYn,i.pcrPsblYn)
+//                        setMarker(i.YPosWgs84!!.toDouble(),i.XPosWgs84!!.toDouble(),i.yadmNm,i.addr,i.ratPsblYn,i.pcrPsblYn)
                     }
                 }
                 naverMap.setOnMapClickListener { pointF: PointF, latLng: LatLng ->
@@ -239,7 +237,7 @@ class MappageFragment : Fragment(),
                 if (location != null) {
                     latitude = location.latitude
                     longitude = location.longitude
-                    Log.d("test : getLastKnownLoaction",latitude.toString()+longitude.toString())
+                    Log.d("test : getLastKnownLoaction",latitude.toString()+" "+longitude.toString())
 //                    val cameraUpdate = CameraUpdate.scrollTo(LatLng(latitude,longitude))
 //                    naverMap.moveCamera(cameraUpdate)
                 }
@@ -254,12 +252,13 @@ class MappageFragment : Fragment(),
 
     override fun onMapReady(p0: NaverMap) {
         naverMap = p0
-//        naverMap.maxZoom = 18.0
+        naverMap.maxZoom = 18.0
         naverMap.minZoom = 10.0
         isgpson.value = true
+
     }
 
-    fun setMarker(y : Double, x : Double,name : String,addr : String, ratPsblYn:String, pcrPsblYn:String)
+    fun setMarker(y : Double, x : Double,name : String,addr : String, ratPsblYn:Boolean, pcrPsblYn:Boolean)
     {
         var marker = Marker()
         marker.position = LatLng(y,x)
@@ -274,54 +273,42 @@ class MappageFragment : Fragment(),
         marker.setCaptionMaxZoom(16.0)
         marker.setCaptionText(name)
 
-        //정보창
-        val infoWindow = InfoWindow()
-        infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
-            override fun getText(infoWindow: InfoWindow): CharSequence {
-                return "주소 : $addr\nRAT가능여부 $ratPsblYn\nPCR가능여부$pcrPsblYn"
-            }
-        }
-
-        val listener = Overlay.OnClickListener { overlay ->
-            val marker = overlay as Marker
-            if (marker.infoWindow == null) {
-                // 현재 마커에 정보 창이 열려있지 않을 경우 엶
-                infoWindow.open(marker)
-            } else {
-                // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
-                infoWindow.close()
-            }
+        marker.setOnClickListener {
+            Log.d("Test", addr)
             true
         }
+
+        //정보창
+//        val infoWindow = InfoWindow()
+//        infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
+//            override fun getText(infoWindow: InfoWindow): CharSequence {
+//                return "주소 : $addr\nRAT가능여부 $ratPsblYn\nPCR가능여부$pcrPsblYn"
+//            }
+//        }
+//
+//        val listener = Overlay.OnClickListener { overlay ->
+//            val marker = overlay as Marker
+//            if (marker.infoWindow == null) {
+//                // 현재 마커에 정보 창이 열려있지 않을 경우 엶
+//                infoWindow.open(marker)
+//            } else {
+//                // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
+//                infoWindow.close()
+//            }
+//            true
+//        }
+
         if (naverMap!=null){
-            naverMap.setOnMapClickListener { pointF, latLng ->
-                infoWindow.close()
-            }
-            infoWindowlist.add(infoWindow)
-            marker.onClickListener = listener
+//            naverMap.setOnMapClickListener { pointF, latLng ->
+//                infoWindow.close()
+//            }
+
+//            infoWindowlist.add(infoWindow)
+//            marker.onClickListener = listener
 
             //네이버맵 적용
             marker.map = naverMap
         }
-    }
-
-    private fun tedPermission() {
-        val permissionListener = object : PermissionListener {
-            override fun onPermissionGranted() {}
-            override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
-                Log.d("test0","설정에서 권한을 허가 해주세요.")
-                //todo
-            }
-        }
-        TedPermission.with(requireContext())
-            .setPermissionListener(permissionListener)
-            .setRationaleMessage("서비스 사용을 위해서 몇가지 권한이 필요합니다.")
-            .setDeniedMessage("[설정] > [권한] 에서 권한을 설정할 수 있습니다.")
-            .setPermissions(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-            .check()
     }
 
     inner class GpsThread : Thread(){
@@ -335,6 +322,18 @@ class MappageFragment : Fragment(),
                             val cameraUpdate = CameraUpdate.scrollTo(LatLng(latitude,longitude))
                             naverMap.moveCamera(cameraUpdate)
                             isRunning = false
+                            var hospitaldata = hospitalDB.HospitalInfoDao().getallHospital()
+                            for (i in hospitaldata){
+                                if( latitude-0.03 <= i.YPosWgs84  && i.YPosWgs84 <= latitude+0.03 &&
+                                    longitude-0.03 <= i.XPosWgs84 && i.XPosWgs84 <= longitude+0.03){
+                                    setMarker(i.YPosWgs84,i.XPosWgs84,i.yadmNm,i.addr,i.ratPsblYn,i.pcrPsblYn)
+                                }
+                            }
+                            naverMap.setOnMapClickListener { pointF: PointF, latLng: LatLng ->
+                                for (i in infoWindowlist){
+                                    i.close()
+                                }
+                            }
                         }
                     }
                 }catch (e : Exception){
@@ -345,16 +344,4 @@ class MappageFragment : Fragment(),
         }
     }
 
-    override fun onMappingLoading() {
-    }
-
-    override fun onMappingSuccess(hospitalList: List<HospitalInfo>) {
-        for(i in hospitalList){
-            hospitalDB.HospitalInfoDao().insert(i)
-        }
-        Log.d("test",hospitalDB.HospitalInfoDao().getallHospital().toString())
-    }
-
-    override fun onMappingFailure(code: Int, message: String) {
-    }
 }

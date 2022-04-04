@@ -5,3 +5,9 @@ interface MappingView {
     fun onMappingSuccess(hopitalList: List<HospitalInfo>)
     fun onMappingFailure(code:Int, message:String)
 }
+
+interface UpdateMapView {
+    fun onUpdateMapLoading()
+    fun onUpdateMapSuccess(date : String)
+    fun onUpdateMapFailure(code:Int, message:String)
+}
