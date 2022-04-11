@@ -6,17 +6,16 @@ import com.covidproject.covid_respiratorycare.databinding.FragmentMainBinding
 import com.covidproject.covid_respiratorycare.ui.BaseFragment
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.*
-import android.graphics.DashPathEffect
-
 import com.github.mikephil.charting.data.LineDataSet
-
-
-
+import com.github.mikephil.charting.utils.ColorTemplate
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
 
 class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::inflate) {
 
@@ -25,7 +24,47 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         setWeek(binding.mainDailyGraph)
         binding.mainDailyGraph.setBackgroundColor(Color.WHITE)
         binding.mainDailyGraph.axisRight.isEnabled = false
+
+        setPichart(binding.mainAbroadPiechart)
+
     }
+
+    private fun setPichart(pieChart: PieChart) {
+        val NoOfEmp : ArrayList<PieEntry> = ArrayList()
+
+        NoOfEmp.add(PieEntry(945f,))
+        NoOfEmp.add(PieEntry(1040f, 14251f))
+        NoOfEmp.add(PieEntry(1133f, 2f))
+        NoOfEmp.add(PieEntry(1240f, 3f))
+        NoOfEmp.add(PieEntry(1369f, 4f))
+        NoOfEmp.add(PieEntry(1487f, 5f))
+        NoOfEmp.add(PieEntry(1501f, 6f))
+        NoOfEmp.add(PieEntry(1645f, 7f))
+        NoOfEmp.add(PieEntry(1578f, 8f))
+        NoOfEmp.add(PieEntry(1695f, 9f))
+
+
+        val dataSet = PieDataSet(NoOfEmp, "Number Of Employees")
+        val year = ArrayList<Any>()
+
+        year.add("2008")
+        year.add("2009")
+        year.add("2010")
+        year.add("2011")
+        year.add("2012")
+        year.add("2013")
+        year.add("2014")
+        year.add("2015")
+        year.add("2016")
+        year.add("2017")
+
+        val data = PieData(dataSet)
+
+        pieChart.data = data
+        dataSet.setColors(*ColorTemplate.VORDIPLOM_COLORS)
+        pieChart.animateXY(1000, 1000)
+    }
+
     private fun showBarChart() {
         val valueList = ArrayList<Double>()
         val entries: ArrayList<Entry> = ArrayList()

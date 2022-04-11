@@ -279,32 +279,37 @@ class MappageFragment : Fragment(),
         }
 
         //정보창
-//        val infoWindow = InfoWindow()
-//        infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
-//            override fun getText(infoWindow: InfoWindow): CharSequence {
-//                return "주소 : $addr\nRAT가능여부 $ratPsblYn\nPCR가능여부$pcrPsblYn"
-//            }
-//        }
-//
-//        val listener = Overlay.OnClickListener { overlay ->
-//            val marker = overlay as Marker
-//            if (marker.infoWindow == null) {
-//                // 현재 마커에 정보 창이 열려있지 않을 경우 엶
-//                infoWindow.open(marker)
-//            } else {
-//                // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
-//                infoWindow.close()
-//            }
-//            true
-//        }
+        val infoWindow = InfoWindow()
+        infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
+            override fun getText(infoWindow: InfoWindow): CharSequence {
+                return "주소 : $addr\nRAT가능여부 $ratPsblYn\nPCR가능여부$pcrPsblYn"
+            }
+        }
+
+        val listener = Overlay.OnClickListener { overlay ->
+            val marker = overlay as Marker
+            if (marker.infoWindow == null) {
+                // 현재 마커에 정보 창이 열려있지 않을 경우 엶
+                infoWindow.open(marker)
+                binding.mapNameTv.text = name
+                binding.mapIsratTv.text = ratPsblYn.toString()
+                binding.mapSelectLayoutBack.visibility = View.VISIBLE
+            } else {
+                // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
+                infoWindow.close()
+                binding.mapSelectLayoutBack.visibility = View.INVISIBLE
+            }
+            true
+        }
 
         if (naverMap!=null){
-//            naverMap.setOnMapClickListener { pointF, latLng ->
-//                infoWindow.close()
-//            }
+            naverMap.setOnMapClickListener { pointF, latLng ->
+                infoWindow.close()
+                binding.mapSelectLayoutBack.visibility = View.INVISIBLE
+            }
 
-//            infoWindowlist.add(infoWindow)
-//            marker.onClickListener = listener
+            infoWindowlist.add(infoWindow)
+            marker.onClickListener = listener
 
             //네이버맵 적용
             marker.map = naverMap
@@ -333,6 +338,7 @@ class MappageFragment : Fragment(),
                                 for (i in infoWindowlist){
                                     i.close()
                                 }
+                                binding.mapSelectLayoutBack.visibility = View.INVISIBLE
                             }
                         }
                     }
