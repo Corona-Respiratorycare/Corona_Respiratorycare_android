@@ -50,7 +50,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
         binding.lifecycleOwner = this
     }
 
-
     override fun initView() {
 
         // 날짜 계산

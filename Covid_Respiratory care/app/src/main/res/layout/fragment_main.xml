@@ -221,7 +221,6 @@
                 android:textColor="@color/deepblue"
                 android:textStyle="bold"
                 />
-
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/main_daily_graph"
                 android:layout_width="match_parent"
@@ -229,7 +228,6 @@
                 android:layout_height="250dp"
                 android:paddingHorizontal="10dp"
                 />
-
 
 
         </LinearLayout>
