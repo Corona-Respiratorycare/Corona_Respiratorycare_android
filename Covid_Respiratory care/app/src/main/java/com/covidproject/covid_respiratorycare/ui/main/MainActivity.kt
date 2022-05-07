@@ -8,11 +8,11 @@ import com.covidproject.covid_respiratorycare.ui.BaseActivity
 import com.covidproject.covid_respiratorycare.ui.map.MappageFragment
 
 
-class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
+class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
 
     private lateinit var navHostFragment: NavHostFragment
 
-    override fun initAfterBinding() {
+    override fun initView() {
         supportFragmentManager.beginTransaction().add(R.id.main_fragment_container,MainFragment()
         ).commit()
         binding.mainBottomnavi.setOnNavigationItemSelectedListener {
@@ -25,10 +25,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             true
         }
     }
-
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(R.id.main_fragment_container,fragment).commit()
     }
-
 
 }

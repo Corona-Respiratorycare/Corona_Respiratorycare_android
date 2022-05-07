@@ -3,7 +3,10 @@ package com.covidproject.covid_respiratorycare.ui.splash
 import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import com.covidproject.covid_respiratorycare.R
 import com.covidproject.covid_respiratorycare.data.HospitalDatabase
 import com.covidproject.covid_respiratorycare.databinding.ActivitySplashBinding
 import com.covidproject.covid_respiratorycare.ui.BaseActivity
@@ -18,12 +21,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding::inflate), MappingView, UpdateMapView {
+class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_splash), MappingView, UpdateMapView {
 
     private val mappingService = MappingService()
     lateinit var hospitalDB: HospitalDatabase
 
-    override fun initAfterBinding() {
+    override fun initView() {
         tedPermission()
         hospitalDB = HospitalDatabase.getInstance(this)!!
         mappingService.setmappingView(this)
@@ -37,6 +40,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
         CoroutineScope(Dispatchers.IO).launch {
             mappingService.getUpdateInfo()
         }
+
     }
 
     override fun onMappingLoading() {
@@ -83,9 +87,12 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
         val spf = getSharedPreferences("DateInfo",MODE_PRIVATE)
         val spfdate = spf.getString("Update_date","no")
         if(date == spfdate){
-            val intent = Intent(this, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
+            Handler(Looper.getMainLooper()).postDelayed({
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            }, 1000)
+
         }else{
             val editor: SharedPreferences.Editor = spf?.edit()!!
             editor.putString("Update_date",date)

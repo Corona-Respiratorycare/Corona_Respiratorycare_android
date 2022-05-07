@@ -4,10 +4,19 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare/Covid_Respiratory care/app/src/main/res/layout/activity_main.xml" value="0.21105072463768115" />
+        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/drawable/border_blue.xml" value="0.21510416666666668" />
+        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/drawable/border_dpblue.xml" value="0.2526041666666667" />
+        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/drawable/border_green.xml" value="0.296875" />
+        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/drawable/border_plblue.xml" value="0.2526041666666667" />
+        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/drawable/border_white.xml" value="0.21510416666666668" />
+        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/font/font_hannaair.xml" value="0.22916666666666666" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/activity_main.xml" value="0.20108695652173914" />
-        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/fragment_main.xml" value="0.20108695652173914" />
+        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/activity_splash.xml" value="0.23097826086956522" />
+        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/fragment_main.xml" value="0.22" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/fragment_map.xml" value="0.20108695652173914" />
+        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/fragment_mappage.xml" value="0.17603850050658562" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/fragment_navermap.xml" value="0.19791666666666666" />
+        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/item_naver_news.xml" value="0.28072916666666664" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/menu.xml" value="0.20108695652173914" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/navi_menu.xml" value="0.20108695652173914" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/menu/menu_main.xml" value="0.20208333333333334" />
@@ -22,6 +31,11 @@
         <entry key="..\:/Users/cksgo/Desktop/Subject/Corona_Respiratorycare_android/Covid_Respiratory care/app/src/main/res/layout/fragment_mappage.xml" value="0.13541666666666666" />
       </map>
     </option>
+  </component>
+  <component name="EntryPointsManager">
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="retrofit2.http.GET" />
+    </list>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />

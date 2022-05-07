@@ -14,6 +14,7 @@
     </color>
     <color name="customcolor3">#859DD6
     </color>
-
+    <color name="deepblue">#165188</color>
+    <color name="navergreen">#66C971</color>
 
 </resources>

@@ -30,6 +30,7 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.MarkerIcons
 import androidx.fragment.app.FragmentManager
+import com.covidproject.covid_respiratorycare.R
 import com.covidproject.covid_respiratorycare.data.HospitalDatabase
 import com.covidproject.covid_respiratorycare.databinding.FragmentMappageBinding
 import com.covidproject.covid_respiratorycare.ui.Service.mapping.HospitalInfo
@@ -43,8 +44,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class MappageFragment : Fragment(),
-    OnMapReadyCallback {
+class MappageFragment : BaseFragment<FragmentMappageBinding>(R.layout.fragment_mappage), OnMapReadyCallback {
 
     lateinit var hospitalDB: HospitalDatabase
     private lateinit var naverMap : NaverMap
@@ -64,7 +64,6 @@ class MappageFragment : Fragment(),
     private var isgpson: MutableLiveData<Boolean> = MutableLiveData()
     private var isgpsondata = false
     private val gpsthread = GpsThread()
-    private lateinit var binding : FragmentMappageBinding
 
     private val mappingService = MappingService()
 

@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.LayoutRes
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.covidproject.covid_respiratorycare.Inflate
@@ -13,43 +16,38 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlin.coroutines.CoroutineContext
 
+abstract class BaseFragment<T : ViewDataBinding>(
+    @LayoutRes val layoutId : Int
+): Fragment() {
+    lateinit var binding : T
 
-abstract class BaseFragment<VB : ViewBinding>(
-    private val inflate: Inflate<VB>
-) : Fragment(), CoroutineScope {
-    private var _binding: VB? = null
-    protected val binding get() = _binding!!
-
-    private lateinit var job: Job // 2
-    override val coroutineContext: CoroutineContext // 3
-        get() = Dispatchers.IO + job
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = inflate.invoke(inflater, container, false)
-        job = Job()
+        binding = DataBindingUtil.inflate(inflater, layoutId,container, false)
 
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        initAfterBinding()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.lifecycleOwner = this
+        initViewModel()
+        initView()
+        initListener()
+        afterViewCreated()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-        job.cancel()
-    }
+    protected open fun afterViewCreated(){}
 
-    protected abstract fun initAfterBinding()
+    protected open fun initListener(){}
 
-    fun showToast(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
+    protected open fun initViewModel(){}
 
+    protected open fun initView(){}
+
+    protected fun showToast(msg: String) =
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
 }

@@ -13,5 +13,4 @@ interface MappingRetrofitInterface {
 //    suspend fun getHospitalInfo(@Header("auth") jwt : String,
 //                                @Query("inputStr") inputtext: String): HopitalInfoResult
 
-
 }
