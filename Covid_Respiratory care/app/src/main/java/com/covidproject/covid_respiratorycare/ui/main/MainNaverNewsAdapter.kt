@@ -16,6 +16,16 @@ class MainNaverNewsAdapter(navernews : List<NaverNews>)
 
     private var news: List<NaverNews> = navernews
 
+    // 외부에서 연결해 사용할 클릭 인터페이스 생성
+    private var listener : OnClickInterface? = null
+    interface OnClickInterface{
+        fun onItemClick(v:View, news: NaverNews, pos:Int)
+    }
+
+    fun setOnItemClickListener(listener : OnClickInterface){
+        this.listener = listener
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, i: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_naver_news, parent, false)
 //        val binding = ItemNaverNewsBinding.inflate(LayoutInflater.from(parent.context),parent,false)
@@ -46,17 +56,12 @@ class MainNaverNewsAdapter(navernews : List<NaverNews>)
             contentTv.setText(text)
             text = news.pubDate.replace(re, "").replace("&quot;","\"")
             pubdataTv.setText(text)
+
+            itemView.setOnClickListener {
+                listener?.onItemClick(itemView,news,position)
+            }
+
         }
     }
-
-//    fun setMemos(memos: List<Memo>,ordering: Boolean) {
-//        this.totalmemos = memos
-//        if(!ordering){
-//            this.memos = totalmemos.sortedWith(compareBy({ it.date }))
-//        }else{
-//            this.memos = totalmemos.sortedWith(compareByDescending ({ it.date }))
-//        }
-//        notifyDataSetChanged()
-//    }
 
 }

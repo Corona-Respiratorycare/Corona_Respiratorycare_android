@@ -92,7 +92,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
             }, 1000)
-
         }else{
             val editor: SharedPreferences.Editor = spf?.edit()!!
             editor.putString("Update_date",date)

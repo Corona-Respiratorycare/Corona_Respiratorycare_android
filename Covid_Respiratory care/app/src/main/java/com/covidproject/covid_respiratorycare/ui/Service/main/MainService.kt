@@ -41,10 +41,10 @@ class MainService {
 //        }
     }
 
-    suspend fun getSeoulCovidMain() {
+    suspend fun getSeoulCovidMain(now:String) {
         val result = mainService.getSeoulCovidMain(
             ServiceKey,
-            20220507,20220507)
+            now.toInt(),now.toInt())
         val resultArray = xmlParse(result)
         if(resultArray.size>=1){
             mainInfoView.onInfoSuccess("getSeoulCovidMain",resultArray)
@@ -78,13 +78,10 @@ class MainService {
         // 신규 확진자
         var incDec = false
         var incDec_num = ""
-
         // 서울인지 체크
         var isSeoul = false
-
         // 지역 명
         var gubun = false
-
         // 7일치 신규 확진자 배열
         var resultArray = ArrayList<String>()
 

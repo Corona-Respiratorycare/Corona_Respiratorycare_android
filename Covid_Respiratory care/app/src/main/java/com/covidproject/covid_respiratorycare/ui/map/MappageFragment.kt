@@ -82,19 +82,10 @@ class MappageFragment : BaseFragment<FragmentMappageBinding>(R.layout.fragment_m
         })
 
         gpsthread.start()
-//        tedPermission()
 
         //현재위치 가져오기
         getLastKnownLocation()
         database = FirebaseDatabase.getInstance().reference
-
-        //토탈카운트 들고오기
-//        database.child("response").child("body").child("totalCount").get().addOnSuccessListener {
-//            totalcount = Integer.parseInt(it.value as String)
-//            SetHospitalDatabase()
-//        }.addOnFailureListener{
-//        }
-
         hospitalDB = HospitalDatabase.getInstance(requireContext())!!
 //        mappingService.setmappingView(this)
 //        CoroutineScope(Dispatchers.IO).launch {
@@ -114,19 +105,10 @@ class MappageFragment : BaseFragment<FragmentMappageBinding>(R.layout.fragment_m
         binding.mapView.onResume()
     }
 
-    override fun onPause() {
-        super.onPause()
-//        binding.mapView.onPause()
-    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         binding.mapView.onSaveInstanceState(outState)
-    }
-
-    override fun onStop() {
-        super.onStop()
-//        binding.mapView.onStop()
     }
 
     override fun onDestroyView() {
@@ -139,85 +121,7 @@ class MappageFragment : BaseFragment<FragmentMappageBinding>(R.layout.fragment_m
         binding.mapView.onLowMemory()
     }
 
-    private fun SetHospitalDatabase() {
-        hospitaldata = ArrayList<Hospitaldata>()
-        //경우에 따라 서버의 업데이트된 값을 확인하는 대신 로컬 캐시의 값을 즉시 반환하고 싶을 수 있습니다.
-        // 이 경우에는 addListenerForSingleValueEvent을 사용하여 로컬 디스크 캐시에서 데이터를 즉시 가져올 수 있습니다.
-        database.child("response").child("body").child("items").child("item").addListenerForSingleValueEvent(object:
-            ValueEventListener {
-            override fun onDataChange(it: DataSnapshot) {
-                for (i in 0 until totalcount) {
-                    hospitaldata.add(
-                        Hospitaldata(
-                            Integer.parseInt(it.child(i.toString()).child("rnum").value.toString()),
-                            it.child(i.toString()).child("ratPsblYn").value.toString(),
-                            it.child(i.toString()).child("XPosWgs84").value.toString(),
-                            it.child(i.toString()).child("telno").value.toString(),
-                            it.child(i.toString()).child("YPosWgs84").value.toString(),
-                            it.child(i.toString()).child("pcrPsblYn").value.toString(),
-                            it.child(i.toString()).child("yadmNm").value.toString(),
-                            it.child(i.toString()).child("YPos").value.toString(),
-                            it.child(i.toString()).child("rprtWorpClicFndtTgtYn").value.toString(),
-                            it.child(i.toString()).child("recuClCd").value.toString(),
-                            it.child(i.toString()).child("XPos").value.toString(),
-                            it.child(i.toString()).child("sidoCdNm").value.toString(),
-                            it.child(i.toString()).child("addr").value.toString(),
-                            it.child(i.toString()).child("mgtStaDd").value.toString(),
-                            it.child(i.toString()).child("sgguCdNm").value.toString(),
-                            it.child(i.toString()).child("ykihoEnc").value.toString(),
-                        )
-                    )
-                }
-//                1) 위도만 0.01바꾸었을 경우 거리  1110m 정도 바뀜 latitude 위도
-//                2) 경도만 0.01바꾸었을 경우 거리  890m 정도 바뀜
-                for (i in hospitaldata){
-                    if(i.YPosWgs84 == "null" || i.XPosWgs84 == "null"){
-                        continue
-                    }
-                    if( latitude-0.05 <= i.YPosWgs84!!.toDouble()  && i.YPosWgs84!!.toDouble() <= latitude+0.05 &&
-                        longitude-0.05 <= i.XPosWgs84!!.toDouble() && i.XPosWgs84!!.toDouble() <= longitude+0.05){
-//                        setMarker(i.YPosWgs84!!.toDouble(),i.XPosWgs84!!.toDouble(),i.yadmNm,i.addr,i.ratPsblYn,i.pcrPsblYn)
-                    }
-                }
-                naverMap.setOnMapClickListener { pointF: PointF, latLng: LatLng ->
-                    for (i in infoWindowlist){
-                        i.close()
-                    }
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("test", "Error getting data"+error.toString())
-            }
-        })
 
-//        database.child("response").child("body").child("items").child("item").get()
-//            .addOnSuccessListener { it ->
-//                for (i in 0 until totalcount) {
-//                    hospitaldata.add(
-//                        Hospitaldata(
-//                            Integer.parseInt(it.child(i.toString()).child("rnum").value.toString()),
-//                            it.child(i.toString()).child("ratPsblYn").value.toString(),
-//                            it.child(i.toString()).child("XPosWgs84").value.toString(),
-//                            it.child(i.toString()).child("telno").value.toString(),
-//                            it.child(i.toString()).child("YPosWgs84").value.toString(),
-//                            it.child(i.toString()).child("pcrPsblYn").value.toString(),
-//                            it.child(i.toString()).child("yadmNm").value.toString(),
-//                            it.child(i.toString()).child("YPos").value.toString(),
-//                            it.child(i.toString()).child("rprtWorpClicFndtTgtYn").value.toString(),
-//                            it.child(i.toString()).child("recuClCd").value.toString(),
-//                            it.child(i.toString()).child("XPos").value.toString(),
-//                            it.child(i.toString()).child("sidoCdNm").value.toString(),
-//                            it.child(i.toString()).child("addr").value.toString(),
-//                            it.child(i.toString()).child("mgtStaDd").value.toString(),
-//                            it.child(i.toString()).child("sgguCdNm").value.toString(),
-//                            it.child(i.toString()).child("ykihoEnc").value.toString(),
-//                        )
-//                    )
-//                }
-//            }.addOnFailureListener {
-//                Log.e("test", "Error getting data", it)
-//            }
-    }
 
     @SuppressLint("LongLogTag")
     fun getLastKnownLocation() {
@@ -349,4 +253,83 @@ class MappageFragment : BaseFragment<FragmentMappageBinding>(R.layout.fragment_m
         }
     }
 
+    private fun SetHospitalDatabase() {
+        hospitaldata = ArrayList<Hospitaldata>()
+        //경우에 따라 서버의 업데이트된 값을 확인하는 대신 로컬 캐시의 값을 즉시 반환하고 싶을 수 있습니다.
+        // 이 경우에는 addListenerForSingleValueEvent을 사용하여 로컬 디스크 캐시에서 데이터를 즉시 가져올 수 있습니다.
+        database.child("response").child("body").child("items").child("item").addListenerForSingleValueEvent(object:
+            ValueEventListener {
+            override fun onDataChange(it: DataSnapshot) {
+                for (i in 0 until totalcount) {
+                    hospitaldata.add(
+                        Hospitaldata(
+                            Integer.parseInt(it.child(i.toString()).child("rnum").value.toString()),
+                            it.child(i.toString()).child("ratPsblYn").value.toString(),
+                            it.child(i.toString()).child("XPosWgs84").value.toString(),
+                            it.child(i.toString()).child("telno").value.toString(),
+                            it.child(i.toString()).child("YPosWgs84").value.toString(),
+                            it.child(i.toString()).child("pcrPsblYn").value.toString(),
+                            it.child(i.toString()).child("yadmNm").value.toString(),
+                            it.child(i.toString()).child("YPos").value.toString(),
+                            it.child(i.toString()).child("rprtWorpClicFndtTgtYn").value.toString(),
+                            it.child(i.toString()).child("recuClCd").value.toString(),
+                            it.child(i.toString()).child("XPos").value.toString(),
+                            it.child(i.toString()).child("sidoCdNm").value.toString(),
+                            it.child(i.toString()).child("addr").value.toString(),
+                            it.child(i.toString()).child("mgtStaDd").value.toString(),
+                            it.child(i.toString()).child("sgguCdNm").value.toString(),
+                            it.child(i.toString()).child("ykihoEnc").value.toString(),
+                        )
+                    )
+                }
+//                1) 위도만 0.01바꾸었을 경우 거리  1110m 정도 바뀜 latitude 위도
+//                2) 경도만 0.01바꾸었을 경우 거리  890m 정도 바뀜
+                for (i in hospitaldata){
+                    if(i.YPosWgs84 == "null" || i.XPosWgs84 == "null"){
+                        continue
+                    }
+                    if( latitude-0.05 <= i.YPosWgs84!!.toDouble()  && i.YPosWgs84!!.toDouble() <= latitude+0.05 &&
+                        longitude-0.05 <= i.XPosWgs84!!.toDouble() && i.XPosWgs84!!.toDouble() <= longitude+0.05){
+//                        setMarker(i.YPosWgs84!!.toDouble(),i.XPosWgs84!!.toDouble(),i.yadmNm,i.addr,i.ratPsblYn,i.pcrPsblYn)
+                    }
+                }
+                naverMap.setOnMapClickListener { pointF: PointF, latLng: LatLng ->
+                    for (i in infoWindowlist){
+                        i.close()
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("test", "Error getting data"+error.toString())
+            }
+        })
+
+//        database.child("response").child("body").child("items").child("item").get()
+//            .addOnSuccessListener { it ->
+//                for (i in 0 until totalcount) {
+//                    hospitaldata.add(
+//                        Hospitaldata(
+//                            Integer.parseInt(it.child(i.toString()).child("rnum").value.toString()),
+//                            it.child(i.toString()).child("ratPsblYn").value.toString(),
+//                            it.child(i.toString()).child("XPosWgs84").value.toString(),
+//                            it.child(i.toString()).child("telno").value.toString(),
+//                            it.child(i.toString()).child("YPosWgs84").value.toString(),
+//                            it.child(i.toString()).child("pcrPsblYn").value.toString(),
+//                            it.child(i.toString()).child("yadmNm").value.toString(),
+//                            it.child(i.toString()).child("YPos").value.toString(),
+//                            it.child(i.toString()).child("rprtWorpClicFndtTgtYn").value.toString(),
+//                            it.child(i.toString()).child("recuClCd").value.toString(),
+//                            it.child(i.toString()).child("XPos").value.toString(),
+//                            it.child(i.toString()).child("sidoCdNm").value.toString(),
+//                            it.child(i.toString()).child("addr").value.toString(),
+//                            it.child(i.toString()).child("mgtStaDd").value.toString(),
+//                            it.child(i.toString()).child("sgguCdNm").value.toString(),
+//                            it.child(i.toString()).child("ykihoEnc").value.toString(),
+//                        )
+//                    )
+//                }
+//            }.addOnFailureListener {
+//                Log.e("test", "Error getting data", it)
+//            }
+    }
 }

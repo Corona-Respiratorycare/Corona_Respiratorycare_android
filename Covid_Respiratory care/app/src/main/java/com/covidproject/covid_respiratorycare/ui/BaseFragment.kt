@@ -1,6 +1,7 @@
 package com.covidproject.covid_respiratorycare.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +39,7 @@ abstract class BaseFragment<T : ViewDataBinding>(
         initView()
         initListener()
         afterViewCreated()
+//        Log.d(binding.toString(),"OnCreate")
     }
 
     protected open fun afterViewCreated(){}

@@ -24,12 +24,19 @@
             android:name=".ui.main.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+            >
+        </activity>
+
+        <activity
+            android:name=".ui.map.MapActivity"
+            android:exported="true"
             android:theme="@style/Theme.Covid_Respiratorycare.NoActionBar">
 
         </activity>
 
         <activity android:name=".ui.splash.SplashActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.Covid_Respiratorycare.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

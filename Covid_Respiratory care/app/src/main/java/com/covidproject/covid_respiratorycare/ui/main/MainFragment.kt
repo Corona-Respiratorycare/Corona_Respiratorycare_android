@@ -1,6 +1,10 @@
 package com.covidproject.covid_respiratorycare.ui.main
 
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
+import android.util.Log
+import android.view.View
 import com.covidproject.covid_respiratorycare.databinding.FragmentMainBinding
 import com.covidproject.covid_respiratorycare.ui.BaseFragment
 import com.github.mikephil.charting.charts.BarChart
@@ -16,6 +20,7 @@ import com.covidproject.covid_respiratorycare.R
 import com.covidproject.covid_respiratorycare.ui.Service.main.MainInfoView
 import com.covidproject.covid_respiratorycare.ui.Service.main.MainService
 import com.covidproject.covid_respiratorycare.ui.Service.main.NaverNews
+import com.covidproject.covid_respiratorycare.ui.map.MapActivity
 
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.data.PieData
@@ -45,13 +50,31 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
     override fun initViewModel() {
         mainretrofitService = MainService()
         mainretrofitService.setInfoView(this)
-        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         binding.mainViewModel = mainViewModel
         binding.lifecycleOwner = this
+
+        // 네이버 뉴스 Livedata가 업데이트 되면 어뎁터 설정
+        mainViewModel.naverNews.observe(this, androidx.lifecycle.Observer {
+            navernewsRvAdapter = mainViewModel.naverNews.value?.let { MainNaverNewsAdapter(it) }!!
+
+            // 아이템 클릭 리스너 연결
+            navernewsRvAdapter.setOnItemClickListener(object : MainNaverNewsAdapter.OnClickInterface{
+                override fun onItemClick(v: View, news: NaverNews, pos: Int) {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(news.link)))
+                }
+            })
+            binding.mainNavernewsRv.adapter = navernewsRvAdapter
+        })
+
+        mainViewModel.scrollLocation.observe(this, androidx.lifecycle.Observer {
+            binding.mainScrollview.scrollTo(it.first,it.second)
+            Log.d(TAG,"클릭됨")
+        })
+        
     }
 
     override fun initView() {
-
         // 날짜 계산
         val cal = Calendar.getInstance()
         cal.time = Date()
@@ -61,20 +84,32 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
 
         // 일일확진자, 전공표 데이터 불러오기
         CoroutineScope(Dispatchers.IO).launch {
-            mainretrofitService.getSeoulCovidMain()
+            mainretrofitService.getSeoulCovidMain(now)
             mainretrofitService.getSeoulCovidDaily(before, now)
             mainretrofitService.getCoronaNaverNews()
         }
+        
+        // RecyclerView 레이아웃 매니저 설정
+        val lm = LinearLayoutManager(requireContext())
+        binding.mainNavernewsRv.layoutManager = lm
 
-        //크롤링 할 구문
+        binding.mainFindHospitalTv.setOnClickListener {
+            startActivity(Intent(requireContext(),MapActivity::class.java))
+        }
+
+        // 네이버 크롤링
         val crollingUrl = "https://www.seoul.go.kr/coronaV/coronaStatus.do"
         CoroutineScope(Dispatchers.IO).launch {
-            val doc: Document = Jsoup.connect(crollingUrl).get() //URL 웹사이트에 있는 html 코드를 다 끌어오기
+            // URL 웹사이트에 있는 html 코드를 다 끌어오기, Jsoup 라이브러리 사용
+            val doc: Document = Jsoup.connect(crollingUrl).get()
+            // cssQuery로 원하는 부분 가져오기
             val temele: Elements =
-                doc.select(".table-scroll .tstyle-status tbody tr td") // cssQuery
-            val isEmpty = temele.isEmpty() //빼온 값 null체크
-            if (!isEmpty) { //null값이 아니면 크롤링 실행
-                var covidnumage = ArrayList<String>()
+                doc.select(".table-scroll .tstyle-status tbody tr td") 
+            //빼온 값 null체크
+            val isEmpty = temele.isEmpty()
+            //null값이 아니면 크롤링 실행
+            if (!isEmpty) {
+                val covidnumage = ArrayList<String>()
                 for (i in 1..8) {
                     covidnumage.add(temele[i].text())
                 }
@@ -91,7 +126,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
     override fun onInfoSuccess(funcname: String, data: ArrayList<String>) {
         val activity = activity
         if (activity != null) {
+            // Dipatcher.IO 여서 UI 못 만짐
             requireActivity().runOnUiThread {
+                // 함수이름에 따라 다른 뷰 업데이트 실행
                 if (funcname == "getSeoulCovidMain") {
                     mainViewModel.updatedefCnt(data[0])
                     mainViewModel.updateincCnt(data[1])
@@ -108,13 +145,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
 
     override fun onNaverNewsSuccess(data: List<NaverNews>) {
         val activity = activity
+        // activity가 살아 있으면
         if (activity != null) {
             requireActivity().runOnUiThread {
-                navernewsRvAdapter = MainNaverNewsAdapter(data)
-                binding.mainNavernewsRv.adapter = navernewsRvAdapter
-                val lm = LinearLayoutManager(requireContext())
-//                val lm = LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL, false)
-                binding.mainNavernewsRv.layoutManager = lm
+                // 데이터를 바꾸는 것도 IO에서 안되나 봄
+                mainViewModel.updatenaverNews(data)
             }
         }
     }
@@ -122,6 +157,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
     override fun onInfoFailure(message: String) {
         requireActivity().runOnUiThread {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            Log.d(TAG, message)
         }
     }
 
@@ -179,15 +215,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
         for (i in resultdata) {
             valueList.add(i.toDouble())
         }
-//        valueList.add(5460.0)
-//        valueList.add(2653.0)
-//        valueList.add(8708.0)
-//        valueList.add(7435.0)
-//        valueList.add(6645.0)
-//        valueList.add(3596.0)
-//        valueList.add(6641.0)
 
-        //fit the data into a bar
+        // 바엔트리에 데이터 채우기
         for (i in 0 until valueList.size) {
             val barEntry = BarEntry(i.toFloat(), valueList[i].toFloat())
             entries.add(barEntry)
@@ -235,10 +264,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
         cal.time = Date()
         val df: DateFormat = SimpleDateFormat("yyyy.MM.dd")
         for (i in 0..7) {
+            // 날짜를 05.02 형식으로 바꾸어서 week에 더하기
             week.add(df.format(cal.time).subSequence(5, 10).toString())
             cal.add(Calendar.DATE, -1)
         }
-
+        // xAxis값 넣기
         xAxis.valueFormatter = IndexAxisValueFormatter(week.reversed())
 
         //좌측 값 hiding the left y-axis line, default true if not set
@@ -265,6 +295,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
         legend.orientation = Legend.LegendOrientation.HORIZONTAL
         //setting the location of legend outside the chart, default false if not set
         legend.setDrawInside(true)
+    }
+
+    companion object {
+        private const val TAG = "MainFragment"
     }
 
 
