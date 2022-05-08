@@ -14,9 +14,7 @@
 
 * Coroutine과 함께하는 공공데이터 처리
 
-* XML 파싱
-
-* 크롤링으로 데이터 가져오기
+* [XML 파싱 및 크롤링으로 데이터 가져오기](https://velog.io/@cksgodl/%EA%B3%B5%EA%B3%B5%EB%8D%B0%EC%9D%B4%ED%84%B0-XML-%ED%8C%8C%EC%8B%B1-%EB%B0%8F-%ED%81%AC%EB%A1%A4%EB%A7%81%EC%9C%BC%EB%A1%9C-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0)
 
 * RecyclerView 클릭 인터페이스 설정
 
