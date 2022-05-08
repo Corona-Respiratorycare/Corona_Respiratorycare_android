@@ -19,3 +19,5 @@
 * RecyclerView 클릭 인터페이스 설정
 
 * MPAndroidChart 만져보기
+
+![Screenshot_1651945438](https://user-images.githubusercontent.com/14178811/167308236-7fbb9652-182f-4d32-887a-5dd5780f5c6e.png)
