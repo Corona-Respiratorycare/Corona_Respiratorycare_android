@@ -1,7 +1,7 @@
 # Corona_Respiratorycare
 코로나 치료 가능 병원 출력 앱
 
-써본 것
+정리 할 것
 
 * NaverMap Api
   실시간 지도 위치를 사용하여 주변 병원 가져오기
@@ -18,3 +18,4 @@
 
 * 크롤링으로 데이터 가져오기
 
+* RecyclerView 클릭 인터페이스 설정
