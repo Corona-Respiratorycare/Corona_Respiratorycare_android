@@ -3,6 +3,7 @@ package com.covidproject.covid_respiratorycare.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.covidproject.covid_respiratorycare.ui.Service.main.DaumNews
 import com.covidproject.covid_respiratorycare.ui.Service.main.NaverNews
 
 class MainViewModel : ViewModel() {
@@ -46,6 +47,14 @@ class MainViewModel : ViewModel() {
 
     fun updatenaverNews(naverNews: List<NaverNews>){
         _naverNews.value = naverNews
+    }
+
+    private val _daumNews = MutableLiveData<List<DaumNews>>()
+    val daumNews : LiveData<List<DaumNews>>
+        get() = _daumNews
+
+    fun updatedaumNews(daumNews: List<DaumNews>){
+        _daumNews.value = daumNews
     }
 
     private val _scrollLocation = MutableLiveData<Pair<Int,Int>>()

@@ -17,3 +17,16 @@ data class NaverNews(
     @SerializedName("pubDate")val pubDate: String,
     @SerializedName("title")val title: String
 )
+
+data class DaumNewsResponse(
+    val code: Int,
+    val message: String,
+    @SerializedName("result")val DaumNews: List<DaumNews>
+)
+
+data class DaumNews(
+    val contents: String,
+    val datetime: String,
+    val title: String,
+    val url: String
+)

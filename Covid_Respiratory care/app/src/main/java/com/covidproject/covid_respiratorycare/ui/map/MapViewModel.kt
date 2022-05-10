@@ -1,8 +1,6 @@
 package com.covidproject.covid_respiratorycare.ui.map
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 
 class MapViewModel : ViewModel() {
     private val _hospitalname = MutableLiveData<String>()
@@ -12,6 +10,8 @@ class MapViewModel : ViewModel() {
     private val _israt = MutableLiveData<String>()
     private val _hospitalcode = MutableLiveData<String>()
     private val _addr = MutableLiveData<String>()
+    private val _lat = MutableLiveData<String>()
+    private val _lng = MutableLiveData<String>()
 
     val hospitalname : LiveData<String>
         get() = _hospitalname
@@ -27,6 +27,15 @@ class MapViewModel : ViewModel() {
         get() = _hospitalcode
     val addr : LiveData<String>
         get() = _addr
+    val lat : LiveData<String>
+        get() = _lat
+    val lng : LiveData<String>
+        get() = _lng
+
+    fun updateposition(lat:String, lng:String ){
+        _lng.value = lng
+        _lat.value = lat
+    }
 
     fun updatehospitalname(name : String){
         _hospitalname.value = name
@@ -49,6 +58,20 @@ class MapViewModel : ViewModel() {
     fun updateaddr(name : String){
         _addr.value = name
     }
+
+    private val _telEvent = MutableLiveData<MapEvent<String>>()
+    private val _naverAppEvent = MutableLiveData<MapEvent<Triple<String,String,String>>>()
+    val telEvent : LiveData<MapEvent<String>> get() = _telEvent
+    val naverAppEvent : LiveData<MapEvent<Triple<String,String,String>>> get() = _naverAppEvent
+
+    fun onTelEvent(text : String){
+        _telEvent.value = MapEvent(text)
+    }
+
+    fun onNaverAppEvent(lat : String, lng : String, hospitalname : String){
+        _naverAppEvent.value = MapEvent(Triple(lat,lng,hospitalname))
+    }
+
 
     init{
         _hospitalname.value = ""

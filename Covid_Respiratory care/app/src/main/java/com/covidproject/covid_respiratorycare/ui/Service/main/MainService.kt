@@ -1,6 +1,7 @@
 package com.covidproject.covid_respiratorycare.ui.Service.main
 
 import android.util.Log
+import com.covidproject.covid_respiratorycare.baseretrofit
 import com.covidproject.covid_respiratorycare.navernewsretrofit
 import com.covidproject.covid_respiratorycare.openapiretrofit
 
@@ -14,6 +15,7 @@ import kotlin.collections.ArrayList
 class MainService {
     val mainService = openapiretrofit.create(MainRetrofitInterface::class.java)
     val naveNewsService = navernewsretrofit.create(MainRetrofitInterface::class.java)
+    val baseService = baseretrofit.create(MainRetrofitInterface::class.java)
 
     lateinit var mainInfoView : MainInfoView
     companion object {
@@ -25,6 +27,17 @@ class MainService {
 
     fun setInfoView(mainInfoView: MainInfoView) {
         this.mainInfoView = mainInfoView
+    }
+
+    suspend fun getCoronaDaumNews() {
+        try{
+            val result = baseService.getCoronaDaumNews()
+            Log.d(TAG,result.toString())
+            mainInfoView.onDaumNewsSuccess(result.DaumNews)
+        }catch (throwable : Throwable){
+            Log.d(TAG,throwable.message.toString())
+            mainInfoView.onInfoFailure("getCoronaDaumNews Failed"+throwable.message)
+        }
     }
 
     suspend fun getCoronaNaverNews() {

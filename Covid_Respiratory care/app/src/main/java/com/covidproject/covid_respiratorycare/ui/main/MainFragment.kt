@@ -41,8 +41,10 @@ import org.jsoup.select.Elements
 import android.animation.ObjectAnimator
 import android.graphics.Rect
 import androidx.core.widget.NestedScrollView
+import com.covidproject.covid_respiratorycare.ui.Service.main.DaumNews
 import com.google.android.material.tabs.TabLayout
 import java.lang.Math.abs
+import java.text.DecimalFormat
 
 
 class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), MainInfoView {
@@ -51,6 +53,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
     private lateinit var mainretrofitService: MainService
     val df: DateFormat = SimpleDateFormat("yyyyMMdd")
     private lateinit var navernewsRvAdapter : MainNaverNewsAdapter
+    private lateinit var daumnewsRvAdapter : MainDaumNewsAdapter
 
     override fun initViewModel() {
         mainretrofitService = MainService()
@@ -72,6 +75,18 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
             binding.mainNavernewsRv.adapter = navernewsRvAdapter
         })
 
+        // 다음뉴스 바뀌면 연결
+        mainViewModel.daumNews.observe(this, androidx.lifecycle.Observer {
+            daumnewsRvAdapter = mainViewModel.daumNews.value?.let { MainDaumNewsAdapter(it) }!!
+            // 아이템 클릭 리스너 연결
+            daumnewsRvAdapter.setOnItemClickListener(object : MainDaumNewsAdapter.OnClickInterface{
+                override fun onItemClick(v: View, news: DaumNews, pos: Int) {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(news.url)))
+                }
+            })
+            binding.mainDaumnewsRv.adapter = daumnewsRvAdapter
+        })
+
         // 스크롤뷰 움직이게 하기
         mainViewModel.scrollLocation.observe(this, androidx.lifecycle.Observer {
             binding.mainScrollview.scrollTo(it.first,it.second)
@@ -79,6 +94,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
             objectAnimator.start()
         })
 
+        // 스크롤 될때 스크롤 거리 계산해서 TabLayout 포지션 변경하기
         binding.mainScrollview.setOnScrollChangeListener(object : View.OnScrollChangeListener{
             override fun onScrollChange(
                 v: View?,
@@ -98,11 +114,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
                     scrollY > binding.mainScrollview.computeDistanceToView(binding.mainAgeTv)  &&
                             scrollY < binding.mainScrollview.computeDistanceToView(binding.mainNavernewsTv)
                     -> binding.mainTablayout.setScrollPosition(3, 0f, true)
-
+                    scrollY > binding.mainScrollview.computeDistanceToView(binding.mainDaumnewsTv)  &&
+                            scrollY < binding.mainScrollview.computeDistanceToView(binding.mainDaumnewsRv)
+                    -> binding.mainTablayout.setScrollPosition(4, 0f, true)
                 }
             }
         })
 
+        // 메인 탭레이아웃 바뀌면 스크롤 위치 바꾸기
         binding.mainTablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when(tab?.position){
@@ -110,6 +129,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
                     1 -> binding.mainScrollview.smoothScrollTo(0,610,200)
                     2 -> binding.mainScrollview.smoothScrollTo(0,1700,200)
                     3 -> binding.mainScrollview.smoothScrollTo(0,binding.mainScrollview.computeDistanceToView(binding.mainNavernewsTv),200)
+                    4 -> binding.mainScrollview.smoothScrollTo(0,binding.mainScrollview.computeDistanceToView(binding.mainDaumnewsTv),200)
                 }
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -120,6 +140,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
         })
     }
 
+    // 스크롤뷰내의 객체 Y포지션 가져오기
     internal fun NestedScrollView.computeDistanceToView(view: View): Int {
         return abs(calculateRectOnScreen(this).top - (this.scrollY + calculateRectOnScreen(view).top))
     }
@@ -143,11 +164,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
         cal.add(Calendar.DATE, -7)
         val before = df.format(cal.time).toString()
 
-        // 일일확진자, 전공표 데이터 불러오기
+        // 일일확진자, 전공표 등 데이터 불러오기
         CoroutineScope(Dispatchers.IO).launch {
             mainretrofitService.getSeoulCovidMain(now)
             mainretrofitService.getSeoulCovidDaily(before, now)
             mainretrofitService.getCoronaNaverNews()
+            mainretrofitService.getCoronaDaumNews()
         }
         
         // RecyclerView 레이아웃 매니저 설정
@@ -192,10 +214,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
             requireActivity().runOnUiThread {
                 // 함수이름에 따라 다른 뷰 업데이트 실행
                 if (funcname == "getSeoulCovidMain") {
-                    mainViewModel.updatedefCnt(data[0])
-                    mainViewModel.updateincCnt(data[1])
-                    mainViewModel.updatelocalCnt(data[2])
-                    mainViewModel.updateoverFlowCnt(data[3])
+                    // 숫자 형식 ###,### 포맷 지정
+                    val formatter = DecimalFormat("###,###")
+                    mainViewModel.updatedefCnt(formatter.format(data[0].toInt()).toString())
+                    mainViewModel.updateincCnt(formatter.format(data[1].toInt()).toString())
+                    mainViewModel.updatelocalCnt(formatter.format(data[2].toInt()).toString())
+                    mainViewModel.updateoverFlowCnt(formatter.format(data[3].toInt()).toString())
                     mainViewModel.updatestdDay(data[4])
                 }
                 if (funcname == "getSeoulCovidDaily") {
@@ -212,6 +236,16 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
             requireActivity().runOnUiThread {
                 // 데이터를 바꾸는 것도 IO에서 안되나 봄
                 mainViewModel.updatenaverNews(data)
+            }
+        }
+    }
+
+    override fun onDaumNewsSuccess(news: List<DaumNews>) {
+        val activity = activity
+        // activity가 살아 있으면
+        if (activity != null) {
+            requireActivity().runOnUiThread {
+                mainViewModel.updatedaumNews(news)
             }
         }
     }

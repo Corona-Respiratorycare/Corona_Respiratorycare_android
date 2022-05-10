@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare/Covid_Respiratory care/app/src/main/res/layout/activity_main.xml" value="0.21105072463768115" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/drawable/border_blue.xml" value="0.21510416666666668" />
+        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/drawable/border_daumblue.xml" value="0.2078125" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/drawable/border_dpblue.xml" value="0.2526041666666667" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/drawable/border_green.xml" value="0.296875" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/drawable/border_mapcontainer.xml" value="0.20104166666666667" />
@@ -19,6 +20,7 @@
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/fragment_map.xml" value="0.20108695652173914" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/fragment_mappage.xml" value="0.17603850050658562" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/fragment_navermap.xml" value="0.19791666666666666" />
+        <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/item_daum_news.xml" value="0.19166666666666668" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/item_naver_news.xml" value="0.28072916666666664" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/menu.xml" value="0.20108695652173914" />
         <entry key="..\:/Users/cksgo/Desktop/Corona_Respiratorycare2/Covid_Respiratory care/app/src/main/res/layout/navi_menu.xml" value="0.20108695652173914" />

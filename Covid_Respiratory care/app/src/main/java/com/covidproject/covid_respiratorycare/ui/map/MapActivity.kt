@@ -2,9 +2,11 @@ package com.covidproject.covid_respiratorycare.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.PointF
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -42,19 +44,24 @@ import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import android.content.pm.ResolveInfo
+import java.text.DateFormat
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+
 
 class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnMapReadyCallback {
 
     lateinit var hospitalDB: HospitalDatabase
-    private lateinit var naverMap : NaverMap
-    private var latitude : Double = 0.0
-    private var longitude  : Double = 0.0
+    private lateinit var naverMap: NaverMap
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     //Info 리스트
     val infoWindowlist = ArrayList<InfoWindow>()
 
-    private lateinit var mapViewModel : MapViewModel
+    private lateinit var mapViewModel: MapViewModel
     private var isgpson: MutableLiveData<Boolean> = MutableLiveData()
     private var isgpsondata = false
     private val gpsthread = GpsThread()
@@ -66,11 +73,50 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         binding.mapViewModel = mapViewModel
         binding.lifecycleOwner = this
 
+        // 전화 열기
+        mapViewModel.telEvent.eventObserve(this) { it ->
+            startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + it.replace("-", ""))))
+        }
+
+        // 이벤트리스너로 네이버 맵 키기
+        mapViewModel.naverAppEvent.eventObserve(this) { it->
+            // 네이버 지도 url
+            val url =
+                "nmap://actionPath?parameter=value&appname={com.covidproject.covid_respiratorycare}"
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            // 인텐트 카테고리 브라우저를 사용해 설치된 앱 검색
+            intent.addCategory(Intent.CATEGORY_BROWSABLE)
+            val list =
+                packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            // 설치되어 있지 않다면
+            if (list == null || list.isEmpty()) {
+                // 마켓으로 이동
+                this.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=com.nhn.android.nmap")
+                    )
+                )
+            } else {
+                // URL 스킴 으로 네이버지도에서 검색
+                this.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+//                        Uri.parse("nmap://search?query=${it}&appname=com.covidproject.covid_respiratorycare")
+                        Uri.parse("nmap://route/public?dlat=${it.first}&dlng=${it.second}&dname=${it.third}&appname=com.covidproject.covid_respiratorycare")
+                    )
+                )
+            }
+        }
+
     }
 
     override fun initView() {
         tedPermission()
         binding.mapMapView.getMapAsync(this)
+        binding.mapBackIv.setOnClickListener {
+            finish()
+        }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         isgpson.observe(this, androidx.lifecycle.Observer {
@@ -81,7 +127,6 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
 
         //현재위치 가져오기
         getLastKnownLocation()
-
         hospitalDB = HospitalDatabase.getInstance(this)!!
     }
 
@@ -94,11 +139,12 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         super.onResume()
         binding.mapMapView.onResume()
     }
+
     private fun tedPermission() {
         val permissionListener = object : PermissionListener {
             override fun onPermissionGranted() {}
             override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
-                Log.d("test0","설정에서 권한을 허가 해주세요.")
+                Log.d("test0", "설정에서 권한을 허가 해주세요.")
             }
         }
         TedPermission.with(this)
@@ -135,13 +181,14 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
             return
         }
         fusedLocationClient.lastLocation
-            .addOnSuccessListener { location->
+            .addOnSuccessListener { location ->
                 if (location != null) {
                     latitude = location.latitude
                     longitude = location.longitude
-                    Log.d("test : getLastKnownLoaction",latitude.toString()+" "+longitude.toString())
-//                    val cameraUpdate = CameraUpdate.scrollTo(LatLng(latitude,longitude))
-//                    naverMap.moveCamera(cameraUpdate)
+                    Log.d(
+                        "test : getLastKnownLoaction",
+                        latitude.toString() + " " + longitude.toString()
+                    )
                 }
             }
     }
@@ -158,11 +205,21 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         naverMap.minZoom = 10.0
         isgpson.value = true
     }
-//    i.telno,i.mgtStaDd,i.recuClCd
-    fun setMarker(y : Double, x : Double,name : String,addr : String, ratPsblYn:Boolean, pcrPsblYn:Boolean,telno : String, startday:String,hospitalcode:Int)
-    {
+
+    //    i.telno,i.mgtStaDd,i.recuClCd
+    fun setMarker(
+        y: Double,
+        x: Double,
+        name: String,
+        addr: String,
+        ratPsblYn: Boolean,
+        pcrPsblYn: Boolean,
+        telno: String,
+        startday: String,
+        hospitalcode: Int
+    ) {
         var marker = Marker()
-        marker.position = LatLng(y,x)
+        marker.position = LatLng(y, x)
 //        marker.setIcon(OverlayImage.fromResource(R.drawable.icon_hospital))
         marker.icon = MarkerIcons.BLACK
         marker.iconTintColor = Color.GREEN
@@ -174,14 +231,6 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         marker.captionMaxZoom = 16.0
         marker.captionText = name
 
-
-        //정보창
-//        val infoWindow = InfoWindow()
-//        infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(this) {
-//            override fun getText(infoWindow: InfoWindow): CharSequence {
-//                return "주소 : $addr\nRAT가능여부 $ratPsblYn\nPCR가능여부$pcrPsblYn"
-//            }
-//        }
 
         val listener = Overlay.OnClickListener { overlay ->
             val marker = overlay as Marker
@@ -201,9 +250,11 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
                     }
                 }
             )
-            mapViewModel.updateispcr(if(pcrPsblYn) "True" else "False")
-            mapViewModel.updateisrat(if(ratPsblYn) "True" else "False")
-            mapViewModel.updatestartday(startday)
+            mapViewModel.updateposition(y.toString(),x.toString())
+            mapViewModel.updateispcr(if (pcrPsblYn) "가능" else "불가능")
+            mapViewModel.updateisrat(if (ratPsblYn) "가능" else "불가능")
+            mapViewModel.updatestartday("운영 시작 날짜 : " +  startday.substring(2..3)+"."
+                    +startday.substring(4..5)+"."+startday.substring(6..7))
             mapViewModel.updatetelno(telno)
             mapViewModel.updateaddr(addr)
 
@@ -225,34 +276,46 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         marker.map = naverMap
     }
 
-    inner class GpsThread : Thread(){
+    inner class GpsThread : Thread() {
         private var isRunning = true
         override fun run() {
-            while(isRunning){
+            while (isRunning) {
                 try {
                     sleep(1000)
-                    if(isgpsondata){
+                    if (isgpsondata) {
                         Handler(Looper.getMainLooper()).post {
-                            val cameraUpdate = CameraUpdate.scrollTo(LatLng(latitude,longitude))
+                            val cameraUpdate = CameraUpdate.scrollTo(LatLng(latitude, longitude))
                             naverMap.moveCamera(cameraUpdate)
                             isRunning = false
-                            var hospitaldata = hospitalDB.HospitalInfoDao().getallHospital()
-                            Log.d("병원정보",hospitaldata.toString())
-                            for (i in hospitaldata){
-                                if( latitude-0.03 <= i.YPosWgs84  && i.YPosWgs84 <= latitude+0.03 &&
-                                    longitude-0.03 <= i.XPosWgs84 && i.XPosWgs84 <= longitude+0.03){
-                                    setMarker(i.YPosWgs84,i.XPosWgs84,i.yadmNm,i.addr,i.ratPsblYn,i.pcrPsblYn,i.telno,i.mgtStaDd,i.recuClCd)
+                            val hospitaldata = hospitalDB.HospitalInfoDao().getallHospital()
+                            Log.d("병원정보", hospitaldata.toString())
+                            for (i in hospitaldata) {
+                                if (latitude - 0.03 <= i.YPosWgs84 && i.YPosWgs84 <= latitude + 0.03 &&
+                                    longitude - 0.03 <= i.XPosWgs84 && i.XPosWgs84 <= longitude + 0.03
+                                ) {
+                                    setMarker(
+                                        i.YPosWgs84,
+                                        i.XPosWgs84,
+                                        i.yadmNm,
+                                        i.addr,
+                                        i.ratPsblYn,
+                                        i.pcrPsblYn,
+                                        i.telno,
+                                        i.mgtStaDd,
+                                        i.recuClCd
+                                    )
                                 }
                             }
+
                             naverMap.setOnMapClickListener { pointF: PointF, latLng: LatLng ->
-                                for (i in infoWindowlist){
+                                for (i in infoWindowlist) {
                                     i.close()
                                 }
                                 binding.mapHospitalContainer.visibility = View.INVISIBLE
                             }
                         }
                     }
-                }catch (e : Exception){
+                } catch (e: Exception) {
                     isRunning = false
                     this.interrupt()
                 }

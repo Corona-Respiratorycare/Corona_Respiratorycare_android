@@ -23,6 +23,7 @@ interface MainRetrofitInterface {
 //        "X-Naver-Client-Id: jwWWLVsAVg0CcNAxsR1Z",
 //        "X-Naver-Client-Secret: wZYJcW4dSD",
 //        })
+
     @GET("/v1/search/news.json")
     suspend fun getCoronaNaverNews(
         @Query("query") findstr : String,
@@ -32,5 +33,9 @@ interface MainRetrofitInterface {
         @Header("X-Naver-Client-Id") clintid: String = "jwWWLVsAVg0CcNAxsR1Z",
         @Header("X-Naver-Client-Secret") clintsecret: String = "wZYJcW4dSD"
         ): NaverNewsResponse
-    
+
+    @GET("/api/v1/hospitals/daum-news")
+    suspend fun getCoronaDaumNews(
+    ): DaumNewsResponse
+
 }
