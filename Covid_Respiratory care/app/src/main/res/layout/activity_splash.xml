@@ -28,7 +28,11 @@
         android:textColor="@color/deepblue"
         android:fontFamily="@font/font_hannaair"
         />
-
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        />
 </LinearLayout>
 
 </layout>

@@ -27,7 +27,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
     lateinit var hospitalDB: HospitalDatabase
 
     override fun initView() {
-        tedPermission()
+//        tedPermission()
         hospitalDB = HospitalDatabase.getInstance(this)!!
         mappingService.setmappingView(this)
         mappingService.setupdateMapView(this)
@@ -66,7 +66,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
             override fun onPermissionGranted() {}
             override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
                 Log.d("test0","설정에서 권한을 허가 해주세요.")
-                //todo
             }
         }
         TedPermission.with(this)

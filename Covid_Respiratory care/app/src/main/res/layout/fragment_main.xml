@@ -2,308 +2,391 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="mainViewModel"
             type="com.covidproject.covid_respiratorycare.ui.main.MainViewModel" />
     </data>
 
-    <ScrollView
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/main_scrollview">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingHorizontal="20dp">
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/main_title_ly"
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="210dp"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:background="@android:color/white">
 
-            <TextView
-                android:id="@+id/main_titile_tv1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/font_hannaair"
-                android:text="서울시 전광판"
-                android:textSize="20sp"
-                android:textColor="@color/deepblue"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/border_blue">
+                app:layout_scrollFlags="exitUntilCollapsed | scroll">
 
                 <TextView
-                    android:id="@+id/main_daily_seoul_tv"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
                     android:fontFamily="@font/font_hannaair"
-                    android:text="서울시"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:text="Covid-19 In Seoul"
+                    android:textColor="@color/deepblue"
+                    android:textSize="25sp"
+                    android:textStyle="bold"/>
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-                <TextView
-                    android:id="@+id/main_daily_seoul_date_tv"
-                    android:layout_width="wrap_content"
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/main_tablayout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:text="@{mainViewModel.stdDay}"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    app:layout_constraintBottom_toBottomOf="@id/main_daily_seoul_tv"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    android:layout_marginHorizontal="10dp"
+                    android:paddingTop="7dp"
+                    app:tabIndicatorColor="@color/deepblue"
+                    app:tabIndicatorFullWidth="false"
+                    app:tabMinWidth="22dp"
+                    app:tabMode="auto"
+                    app:tabRippleColor="@android:color/transparent"
+                    app:tabSelectedTextColor="@color/deepblue"
+                    app:tabTextAppearance="@style/mainTablayoutStyle"
+                    android:paddingBottom="3dp"
+                    app:tabTextColor="@color/dpblue_80">
 
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="전광판"
+                        android:textSize="15sp" />
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="일일 확진자"
+                        android:textSize="15sp" />
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="연령대별 확진자"
+                        android:textSize="15sp" />
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="네이버 뉴스"
+                        android:textSize="15sp" />
+                </com.google.android.material.tabs.TabLayout>
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/main_scrollview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/main_daily_seoul_tv">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="20dp">
 
                     <LinearLayout
+                        android:id="@+id/main_title_ly"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:paddingHorizontal="15dp"
-                        android:paddingVertical="10dp"
-                        android:orientation="horizontal">
+                        android:layout_height="210dp"
+                        android:orientation="vertical">
 
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/main_board_tv"
                             android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:fontFamily="@font/font_hannaair"
+                            android:text="서울시 전광판"
+                            android:textColor="@color/deepblue"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:background="@drawable/border_whiteblue">
+                            android:layout_marginTop="15dp"
+                            android:background="@drawable/border_blue">
+
+                            <TextView
+                                android:id="@+id/main_daily_seoul_tv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15dp"
+                                android:fontFamily="@font/font_hannaair"
+                                android:text="서울시"
+                                android:textColor="@color/white"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/main_daily_seoul_date_tv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="10dp"
+                                android:text="@{mainViewModel.stdDay}"
+                                android:textColor="@color/white"
+                                android:textSize="10sp"
+                                app:layout_constraintBottom_toBottomOf="@id/main_daily_seoul_tv"
+                                app:layout_constraintEnd_toEndOf="parent" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:orientation="vertical">
+                                android:layout_height="0dp"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/main_daily_seoul_tv">
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="신규 확진자"
-                                    android:textColor="@color/deepblue"
-                                    android:textStyle="bold"/>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:textColor="@color/deepblue"
-                                    android:layout_height="wrap_content"
-                                    android:text="@{mainViewModel.defCnt}"
-                                    android:textStyle="bold"/>
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal"
+                                    android:paddingHorizontal="15dp"
+                                    android:paddingVertical="10dp">
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/border_whiteblue">
+
+                                        <LinearLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:gravity="center"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="신규 확진자"
+                                                android:textColor="@color/deepblue"
+                                                android:textStyle="bold" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="@{mainViewModel.defCnt}"
+                                                android:textColor="@color/deepblue"
+                                                android:textStyle="bold" />
+                                        </LinearLayout>
+
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/border_white"
+                                        android:gravity="center"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="누적 확진자"
+                                            android:textColor="@color/deepblue"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="@{mainViewModel.incCnt}"
+                                            android:textColor="@color/deepblue"
+                                            android:textStyle="bold" />
+
+                                    </LinearLayout>
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal"
+                                    android:paddingHorizontal="15dp"
+                                    android:paddingVertical="10dp">
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/border_plblue">
+
+                                        <LinearLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:gravity="center"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="지역 발생"
+                                                android:textColor="@color/white"
+                                                android:textStyle="bold" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="@{mainViewModel.localCnt}"
+                                                android:textColor="@color/white"
+                                                android:textStyle="bold" />
+                                        </LinearLayout>
+
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/border_dpblue"
+                                        android:gravity="center"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="해외 유입"
+                                            android:textColor="@color/white"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="@{mainViewModel.overFlowCnt}"
+                                            android:textColor="@color/white"
+                                            android:textStyle="bold" />
+
+                                    </LinearLayout>
+
+                                </LinearLayout>
+
                             </LinearLayout>
 
-                        </LinearLayout>
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:background="@drawable/border_white"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="누적 확진자"
-                                android:textColor="@color/deepblue"
-                                android:textStyle="bold"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:textColor="@color/deepblue"
-                                android:layout_height="wrap_content"
-                                android:text="@{mainViewModel.incCnt}"
-                                android:textStyle="bold"/>
-
-                        </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:paddingHorizontal="15dp"
-                        android:paddingVertical="10dp"
-                        android:orientation="horizontal">
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
 
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/main_daily_title_tv"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:background="@drawable/border_plblue">
+                            android:layout_height="wrap_content"
+                            android:text="서울시 일일 확진자"
+                            android:textColor="@color/deepblue"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:orientation="vertical">
+                        <com.github.mikephil.charting.charts.BarChart
+                            android:id="@+id/main_daily_graph"
+                            android:layout_width="match_parent"
+                            android:layout_height="250dp"
+                            android:layout_marginTop="15dp"
+                            android:paddingHorizontal="10dp" />
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="지역 발생"
-                                    android:textColor="@color/white"
-                                    android:textStyle="bold"/>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:textColor="@color/white"
-                                    android:layout_height="wrap_content"
-                                    android:text="@{mainViewModel.localCnt}"
-                                    android:textStyle="bold"/>
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:background="@drawable/border_dpblue"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="해외 유입"
-                                android:textColor="@color/white"
-                                android:textStyle="bold"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:textColor="@color/white"
-                                android:layout_height="wrap_content"
-                                android:text="@{mainViewModel.overFlowCnt}"
-                                android:textStyle="bold"/>
-
-                        </LinearLayout>
 
                     </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/border_blue"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/main_find_hospital_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:paddingHorizontal="20dp"
+                            android:paddingVertical="20dp"
+                            android:text="내 주변 코로나 병원 알아보기"
+                            android:textColor="@color/white"
+                            android:textSize="23sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/main_age_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="서울시 연령대별 확진자 비율"
+                            android:textColor="@color/deepblue"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <com.github.mikephil.charting.charts.PieChart
+                            android:id="@+id/main_daily_piechart"
+                            android:layout_width="match_parent"
+                            android:layout_height="350dp"
+                            android:layout_marginTop="15dp"
+                            android:background="@android:color/transparent"
+                            android:paddingHorizontal="10dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/main_navernews_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="네이버 코로나 관련 뉴스"
+                            android:textColor="@color/deepblue"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/main_navernews_rv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:orientation="vertical"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:listitem="@layout/item_naver_news" />
+
+                    </LinearLayout>
+
 
                 </LinearLayout>
 
+            </androidx.core.widget.NestedScrollView>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/main_daily_title_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="서울시 일일 확진자"
-                android:textSize="20sp"
-                android:textColor="@color/deepblue"
-                android:textStyle="bold"
-                />
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/main_daily_graph"
-                android:layout_width="match_parent"
-                android:layout_marginTop="15dp"
-                android:layout_height="250dp"
-                android:paddingHorizontal="10dp"
-                />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/border_blue"
-            android:layout_marginTop="20dp"
-            android:gravity="center">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="내 주변 코로나 병원 알아보기"
-                android:id="@+id/main_find_hospital_tv"
-                android:paddingHorizontal="20dp"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="23sp"
-                android:textStyle="bold"
-                android:paddingVertical="20dp"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="20dp"
-            >
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textColor="@color/deepblue"
-                android:textStyle="bold"
-                android:text="서울시 연령대별 확진자 비율"
-                />
-            <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/main_daily_piechart"
-                android:layout_width="match_parent"
-                android:layout_height="350dp"
-                android:layout_marginTop="15dp"
-                android:paddingHorizontal="10dp"
-                android:background="@android:color/transparent"
-                />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="20dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textColor="@color/deepblue"
-                android:textStyle="bold"
-                android:text="네이버 코로나 관련 뉴스"
-                />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:id="@+id/main_navernews_rv"
-                tools:listitem="@layout/item_naver_news"
-                android:orientation="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                />
-
-        </LinearLayout>
-
-
-    </LinearLayout>
-
-    </ScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

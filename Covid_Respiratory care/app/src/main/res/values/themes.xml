@@ -19,6 +19,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="mainTablayoutStyle" parent="@android:style/TextAppearance.Widget.TabWidget">
+        <item name="android:fontFamily">@font/font_hannaair</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="Theme.Covid_Respiratorycare.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Covid_Respiratorycare.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

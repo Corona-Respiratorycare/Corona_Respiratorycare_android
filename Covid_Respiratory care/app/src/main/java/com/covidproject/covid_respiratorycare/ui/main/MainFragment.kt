@@ -38,6 +38,11 @@ import kotlin.collections.ArrayList
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import android.animation.ObjectAnimator
+import android.graphics.Rect
+import androidx.core.widget.NestedScrollView
+import com.google.android.material.tabs.TabLayout
+import java.lang.Math.abs
 
 
 class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), MainInfoView {
@@ -67,11 +72,67 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
             binding.mainNavernewsRv.adapter = navernewsRvAdapter
         })
 
+        // 스크롤뷰 움직이게 하기
         mainViewModel.scrollLocation.observe(this, androidx.lifecycle.Observer {
             binding.mainScrollview.scrollTo(it.first,it.second)
-            Log.d(TAG,"클릭됨")
+            val objectAnimator = ObjectAnimator.ofInt(binding.mainScrollview, "scrollY", binding.mainScrollview.y.toInt(), it.second).setDuration(200)
+            objectAnimator.start()
         })
-        
+
+        binding.mainScrollview.setOnScrollChangeListener(object : View.OnScrollChangeListener{
+            override fun onScrollChange(
+                v: View?,
+                scrollX: Int,
+                scrollY: Int,
+                oldScrollX: Int,
+                oldScrollY: Int
+            ) {
+                when{
+                    scrollY < binding.mainScrollview.computeDistanceToView(binding.mainBoardTv) -> binding.mainTablayout.setScrollPosition(0, 0f, true)
+                    scrollY > binding.mainScrollview.computeDistanceToView(binding.mainBoardTv)  &&
+                            scrollY < binding.mainScrollview.computeDistanceToView(binding.mainDailyTitleTv)
+                        -> binding.mainTablayout.setScrollPosition(1, 0f, true)
+                    scrollY > binding.mainScrollview.computeDistanceToView(binding.mainDailyTitleTv)  &&
+                            scrollY < binding.mainScrollview.computeDistanceToView(binding.mainAgeTv)
+                    -> binding.mainTablayout.setScrollPosition(2, 0f, true)
+                    scrollY > binding.mainScrollview.computeDistanceToView(binding.mainAgeTv)  &&
+                            scrollY < binding.mainScrollview.computeDistanceToView(binding.mainNavernewsTv)
+                    -> binding.mainTablayout.setScrollPosition(3, 0f, true)
+
+                }
+            }
+        })
+
+        binding.mainTablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when(tab?.position){
+                    0 -> binding.mainScrollview.smoothScrollTo(0,0,200)
+                    1 -> binding.mainScrollview.smoothScrollTo(0,610,200)
+                    2 -> binding.mainScrollview.smoothScrollTo(0,1700,200)
+                    3 -> binding.mainScrollview.smoothScrollTo(0,binding.mainScrollview.computeDistanceToView(binding.mainNavernewsTv),200)
+                }
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+        })
+    }
+
+    internal fun NestedScrollView.computeDistanceToView(view: View): Int {
+        return abs(calculateRectOnScreen(this).top - (this.scrollY + calculateRectOnScreen(view).top))
+    }
+
+    internal fun calculateRectOnScreen(view: View): Rect {
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+        return Rect(
+            location[0],
+            location[1],
+            location[0] + view.measuredWidth,
+            location[1] + view.measuredHeight
+        )
     }
 
     override fun initView() {
@@ -98,13 +159,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
         }
 
         // 네이버 크롤링
-        val crollingUrl = "https://www.seoul.go.kr/coronaV/coronaStatus.do"
+        var crollingUrl = "https://www.seoul.go.kr/coronaV/coronaStatus.do"
         CoroutineScope(Dispatchers.IO).launch {
             // URL 웹사이트에 있는 html 코드를 다 끌어오기, Jsoup 라이브러리 사용
             val doc: Document = Jsoup.connect(crollingUrl).get()
             // cssQuery로 원하는 부분 가져오기
             val temele: Elements =
-                doc.select(".table-scroll .tstyle-status tbody tr td") 
+                doc.select(".table-scroll .tstyle-status tbody tr td")
             //빼온 값 null체크
             val isEmpty = temele.isEmpty()
             //null값이 아니면 크롤링 실행
@@ -118,6 +179,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
                 }
             }
         }
+
     }
 
     override fun onInfoLoading() {

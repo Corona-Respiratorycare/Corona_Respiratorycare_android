@@ -26,6 +26,7 @@ class MainService {
     fun setInfoView(mainInfoView: MainInfoView) {
         this.mainInfoView = mainInfoView
     }
+
     suspend fun getCoronaNaverNews() {
         try{
             val result = naveNewsService.getCoronaNaverNews("코로나")
@@ -34,27 +35,31 @@ class MainService {
             Log.d(TAG,throwable.message.toString())
             mainInfoView.onInfoFailure("getCoronaNaverNews Failed"+throwable.message)
         }
-
-    //        if(resultArray.size>=1){
-//            mainInfoView.onInfoSuccess("getSeoulCovidMain",resultArray)
-//        }else{
-//        }
     }
 
+    // 전광판 
     suspend fun getSeoulCovidMain(now:String) {
-        val result = mainService.getSeoulCovidMain(
-            ServiceKey,
-            now.toInt(),now.toInt())
-        val resultArray = xmlParse(result)
-        if(resultArray.size>=1){
-            mainInfoView.onInfoSuccess("getSeoulCovidMain",resultArray)
-        }else{
-            mainInfoView.onInfoFailure("getSeoulCovidMain Failed")
+        var timenow = now.toInt()
+        var result: String
+        var resultArray = ArrayList<String>()
+        // 1일씩 줄여가면서 데이터 있는지 체크
+        try {
+            do {
+                result = mainService.getSeoulCovidMain(
+                    ServiceKey, timenow, timenow
+                )
+                resultArray = xmlParse(result)
+                timenow -=1
+            } while (resultArray.size <= 1)
+            // 데이터 있으면 Success
+            mainInfoView.onInfoSuccess("getSeoulCovidMain", resultArray)
+        }catch (e : Exception){
+            mainInfoView.onInfoFailure("getSeoulCovidMain Failed + $e")
         }
     }
 
+    // 일일 현황 그래프
     suspend fun getSeoulCovidDaily(before :String, now:String) {
-
         val result = mainService.getSeoulCovidMain(
             ServiceKey,
             before.toInt(),now.toInt())
