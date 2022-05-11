@@ -19,3 +19,9 @@
 * RecyclerView 클릭 인터페이스 설정
 
 * MPAndroidChart 만져보기
+
+* Mvvm Databinding에서 이벤트를 처리하기 위한 Event Wrapper 만들기
+
+* 타앱과 연동 및 URL Scheme
+
+* Generic T 에대해
