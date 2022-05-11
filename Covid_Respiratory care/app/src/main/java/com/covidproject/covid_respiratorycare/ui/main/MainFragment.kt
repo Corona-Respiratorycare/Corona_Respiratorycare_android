@@ -204,7 +204,20 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
 
     }
 
-    override fun onInfoLoading() {
+    override fun onInfoLoading(funcname: String) {
+        val activity = activity
+        if (activity != null) {
+            // Dipatcher.IO 여서 UI 못 만짐
+            requireActivity().runOnUiThread {
+                // 함수이름에 따라 다른 뷰 업데이트 실행
+                if (funcname == "getSeoulCovidMain") {
+                    binding.mainBoardProgressbar.visibility = View.VISIBLE
+                }
+                if (funcname == "getSeoulCovidDaily") {
+                    binding.mainDailyProgressbar.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
     override fun onInfoSuccess(funcname: String, data: ArrayList<String>) {
@@ -221,9 +234,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
                     mainViewModel.updatelocalCnt(formatter.format(data[2].toInt()).toString())
                     mainViewModel.updateoverFlowCnt(formatter.format(data[3].toInt()).toString())
                     mainViewModel.updatestdDay(data[4])
+                    binding.mainBoardProgressbar.visibility = View.GONE
                 }
                 if (funcname == "getSeoulCovidDaily") {
                     setWeek(binding.mainDailyGraph, data)
+                    binding.mainDailyGraph.visibility = View.VISIBLE
+                    binding.mainDailyProgressbar.visibility = View.GONE
                 }
             }
         }

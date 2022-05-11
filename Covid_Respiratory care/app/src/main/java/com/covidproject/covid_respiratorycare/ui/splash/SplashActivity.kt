@@ -44,7 +44,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
     }
 
     override fun onMappingLoading() {
-
+        binding.splashLoadingTv.text = "최신 정보 업데이트 중"
     }
 
     override fun onMappingSuccess(hopitalList: List<HospitalInfo>) {
@@ -80,6 +80,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
     }
 
     override fun onUpdateMapLoading() {
+        binding.splashLoadingTv.text = "최신 정보 확인 중"
     }
 
     override fun onUpdateMapSuccess(date: String) {
@@ -90,6 +91,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
                 val intent = Intent(this, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
+                binding.splashLoadingTv.text = "최신 정보 업데이트 완료"
             }, 1000)
         }else{
             val editor: SharedPreferences.Editor = spf?.edit()!!

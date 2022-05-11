@@ -15,6 +15,7 @@
         android:layout_height="400dp"
         android:src="@drawable/img_covid_splash"
         android:scaleType="fitCenter"
+        android:layout_marginHorizontal="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -23,15 +24,27 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Corona In Soeul"
-        android:textSize="28sp"
+        android:text="Covid-19 In Soeul"
+        android:textSize="35sp"
+        android:textStyle="bold"
         android:textColor="@color/deepblue"
+        android:fontFamily="@font/font_hannaair"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/splash_loading_tv"
+        android:text="최신 정보 업데이트중"
+        android:textSize="15sp"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/dpblue_80"
         android:fontFamily="@font/font_hannaair"
         />
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         />
 </LinearLayout>
 

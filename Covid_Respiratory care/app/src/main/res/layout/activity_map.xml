@@ -89,6 +89,16 @@
                             android:layout_marginStart="10dp"
                             android:textStyle="bold" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/font_hannaair"
+                            android:text="@{mapViewModel.dist.toString()}"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"
+                            android:layout_marginStart="20dp"
+                            android:textStyle="bold" />
+
                     </LinearLayout>
 
                     <TextView

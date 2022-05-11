@@ -12,6 +12,20 @@ class MapViewModel : ViewModel() {
     private val _addr = MutableLiveData<String>()
     private val _lat = MutableLiveData<String>()
     private val _lng = MutableLiveData<String>()
+    private val _dist = MutableLiveData<String>()
+
+    private val _userposition = MutableLiveData<Pair<Double,Double>>()
+    val userposition : LiveData<Pair<Double,Double>>
+        get() = _userposition
+    fun updateuserposition(lat : Pair<Double,Double>){
+        _userposition.value = lat
+    }
+    fun updatedist(dist : String){
+        _dist.value = dist
+    }
+
+    val dist : LiveData<String>
+        get() = _dist
 
     val hospitalname : LiveData<String>
         get() = _hospitalname
@@ -36,7 +50,6 @@ class MapViewModel : ViewModel() {
         _lng.value = lng
         _lat.value = lat
     }
-
     fun updatehospitalname(name : String){
         _hospitalname.value = name
     }
@@ -71,7 +84,6 @@ class MapViewModel : ViewModel() {
     fun onNaverAppEvent(lat : String, lng : String, hospitalname : String){
         _naverAppEvent.value = MapEvent(Triple(lat,lng,hospitalname))
     }
-
 
     init{
         _hospitalname.value = ""

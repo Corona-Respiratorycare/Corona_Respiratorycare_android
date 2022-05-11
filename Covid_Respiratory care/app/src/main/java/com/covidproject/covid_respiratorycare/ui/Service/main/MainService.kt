@@ -56,6 +56,7 @@ class MainService {
         var result: String
         var resultArray = ArrayList<String>()
         // 1일씩 줄여가면서 데이터 있는지 체크
+        mainInfoView.onInfoLoading("getSeoulCovidMain")
         try {
             do {
                 result = mainService.getSeoulCovidMain(
@@ -73,6 +74,7 @@ class MainService {
 
     // 일일 현황 그래프
     suspend fun getSeoulCovidDaily(before :String, now:String) {
+        mainInfoView.onInfoLoading("getSeoulCovidDaily")
         val result = mainService.getSeoulCovidMain(
             ServiceKey,
             before.toInt(),now.toInt())

@@ -288,7 +288,15 @@
                                 </LinearLayout>
 
                             </LinearLayout>
-
+                            <ProgressBar
+                                android:layout_width="35dp"
+                                android:layout_height="35dp"
+                                android:id="@+id/main_board_progressbar"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                android:visibility="visible"/>
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -314,8 +322,16 @@
                             android:layout_width="match_parent"
                             android:layout_height="250dp"
                             android:layout_marginTop="15dp"
-                            android:paddingHorizontal="10dp" />
-
+                            android:paddingHorizontal="10dp"
+                            android:visibility="gone"
+                            />
+                        <ProgressBar
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:id="@+id/main_daily_progressbar"
+                            android:layout_gravity="center"
+                            android:layout_marginVertical="100dp"
+                            android:visibility="visible"/>
 
                     </LinearLayout>
 

@@ -6,72 +6,68 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.PointF
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.covidproject.covid_respiratorycare.R
 import com.covidproject.covid_respiratorycare.data.HospitalDatabase
 import com.covidproject.covid_respiratorycare.databinding.ActivityMapBinding
-import com.covidproject.covid_respiratorycare.databinding.FragmentMappageBinding
 import com.covidproject.covid_respiratorycare.ui.BaseActivity
 import com.covidproject.covid_respiratorycare.ui.Service.mapping.MappingService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
-import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.MarkerIcons
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.select.Elements
-import android.content.pm.ResolveInfo
-import java.text.DateFormat
-import java.text.DecimalFormat
-import java.text.SimpleDateFormat
-
+import kotlinx.coroutines.*
 
 class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnMapReadyCallback {
 
     lateinit var hospitalDB: HospitalDatabase
     private lateinit var naverMap: NaverMap
-    private var latitude: Double = 0.0
-    private var longitude: Double = 0.0
+
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    var usermarker = Marker()
 
-    //Info 리스트
-    val infoWindowlist = ArrayList<InfoWindow>()
-
+    lateinit var userpositionThread : UserPositionThread
     private lateinit var mapViewModel: MapViewModel
-    private var isgpson: MutableLiveData<Boolean> = MutableLiveData()
-    private var isgpsondata = false
-    private val gpsthread = GpsThread()
 
-    private val mappingService = MappingService()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_map)
+        binding.mapMapView.onCreate(savedInstanceState)
+        initViewModel()
+        initView()
+        initListener()
+    }
 
     override fun initViewModel() {
         mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
         binding.mapViewModel = mapViewModel
         binding.lifecycleOwner = this
+        userpositionThread = UserPositionThread()
+        // 네이버 지도 동기화
+        binding.mapMapView.getMapAsync(this)
+        // 현재위치 가져오기
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        // DB인스턴트 넣기
+        hospitalDB = HospitalDatabase.getInstance(this)!!
 
         // 전화 열기
         mapViewModel.telEvent.eventObserve(this) { it ->
@@ -79,7 +75,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         }
 
         // 이벤트리스너로 네이버 맵 키기
-        mapViewModel.naverAppEvent.eventObserve(this) { it->
+        mapViewModel.naverAppEvent.eventObserve(this) { it ->
             // 네이버 지도 url
             val url =
                 "nmap://actionPath?parameter=value&appname={com.covidproject.covid_respiratorycare}"
@@ -109,25 +105,56 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
             }
         }
 
+        // 유저포지션 업데이트 되면 그곳으로 카메라 바꾸고 마커찍기
+        mapViewModel.userposition.observe(this,{
+            val cameraUpdate = CameraUpdate.scrollTo(LatLng(it.first, it.second))
+            naverMap.moveCamera(cameraUpdate)
+            setUserPositionMarker(it.first,it.second)
+            setMarkerbyUserPosition()
+        })
+
+        // 사용자 위치 2초마다 바꾸는 쓰레드
+//        userpositionThread.start()
+
     }
+
+    fun setMarkerbyUserPosition() {
+        try {
+                runOnUiThread {
+                val hospitaldata = hospitalDB.HospitalInfoDao().getallHospital()
+                for (i in hospitaldata) {
+                    if (mapViewModel.userposition.value!!.first - 0.03 <= i.YPosWgs84 && i.YPosWgs84 <= mapViewModel.userposition.value!!.first + 0.03 &&
+                        mapViewModel.userposition.value!!.second - 0.03 <= i.XPosWgs84 && i.XPosWgs84 <= mapViewModel.userposition.value!!.second + 0.03
+                    ) {
+                        setMarker(
+                            i.YPosWgs84,
+                            i.XPosWgs84,
+                            i.yadmNm,
+                            i.addr,
+                            i.ratPsblYn,
+                            i.pcrPsblYn,
+                            i.telno,
+                            i.mgtStaDd,
+                            i.recuClCd
+                        )
+                    }
+                }
+                naverMap.setOnMapClickListener { pointF: PointF, latLng: LatLng ->
+                    binding.mapHospitalContainer.visibility = View.INVISIBLE
+                }
+            }
+        } catch (e: Exception) {
+        }
+    }
+    private val coroutinesScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun initView() {
         tedPermission()
-        binding.mapMapView.getMapAsync(this)
+
         binding.mapBackIv.setOnClickListener {
             finish()
         }
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        isgpson.observe(this, androidx.lifecycle.Observer {
-            isgpsondata = it
-        })
-
-        gpsthread.start()
-
-        //현재위치 가져오기
-        getLastKnownLocation()
-        hospitalDB = HospitalDatabase.getInstance(this)!!
     }
 
     override fun onStart() {
@@ -168,8 +195,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         binding.mapMapView.onLowMemory()
     }
 
-    @SuppressLint("LongLogTag")
-    fun getLastKnownLocation() {
+    fun getLastKnownLocation() : Unit{
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -179,34 +205,45 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             return
+        } else {
+            var latitude : Double = 0.0
+            var longitude : Double = 0.0
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location ->
+                        if (location != null) {
+                            Log.d(TAG,"${location.latitude} + ${location.longitude}")
+                            mapViewModel.updateuserposition(Pair(location.latitude,location.longitude))
+                        }
+                    }
         }
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location ->
-                if (location != null) {
-                    latitude = location.latitude
-                    longitude = location.longitude
-                    Log.d(
-                        "test : getLastKnownLoaction",
-                        latitude.toString() + " " + longitude.toString()
-                    )
-                }
-            }
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
         binding.mapMapView.onDestroy()
+        userpositionThread.interrupt()
     }
 
     override fun onMapReady(p0: NaverMap) {
         naverMap = p0
         naverMap.maxZoom = 18.0
         naverMap.minZoom = 10.0
-        isgpson.value = true
+        getLastKnownLocation()
     }
 
-    //    i.telno,i.mgtStaDd,i.recuClCd
+    fun setUserPositionMarker(y : Double, x: Double){
+        usermarker.map = null
+        usermarker.position = LatLng(y, x)
+        usermarker.icon = OverlayImage.fromResource(R.drawable.icon_user)
+        //눕혀도 정방향으로 보여지게
+        usermarker.isIconPerspectiveEnabled = true
+        //캡션
+        usermarker.captionMinZoom = 0.0
+        usermarker.captionMaxZoom = 16.0
+        usermarker.map = naverMap
+    }
+
+
     fun setMarker(
         y: Double,
         x: Double,
@@ -220,9 +257,9 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
     ) {
         var marker = Marker()
         marker.position = LatLng(y, x)
-//        marker.setIcon(OverlayImage.fromResource(R.drawable.icon_hospital))
-        marker.icon = MarkerIcons.BLACK
-        marker.iconTintColor = Color.GREEN
+        marker.icon = OverlayImage.fromResource(R.drawable.icon_hospital_marker)
+//        marker.icon = MarkerIcons.BLACK
+//        marker.iconTintColor = Color.GREEN
         //눕혀도 정방향으로 보여지게
         marker.isIconPerspectiveEnabled = true
 
@@ -231,9 +268,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         marker.captionMaxZoom = 16.0
         marker.captionText = name
 
-
         val listener = Overlay.OnClickListener { overlay ->
-            val marker = overlay as Marker
             binding.mapHospitalContainer.visibility = View.VISIBLE
             mapViewModel.updatehospitalname(name)
             // 11:종합병원 / 21:병원 / 31:의원
@@ -250,76 +285,50 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
                     }
                 }
             )
-            mapViewModel.updateposition(y.toString(),x.toString())
+            mapViewModel.updateposition(y.toString(), x.toString())
             mapViewModel.updateispcr(if (pcrPsblYn) "가능" else "불가능")
             mapViewModel.updateisrat(if (ratPsblYn) "가능" else "불가능")
-            mapViewModel.updatestartday("운영 시작 날짜 : " +  startday.substring(2..3)+"."
-                    +startday.substring(4..5)+"."+startday.substring(6..7))
+            mapViewModel.updatestartday(
+                "운영 시작 날짜 : " + startday.substring(2..3) + "."
+                        + startday.substring(4..5) + "." + startday.substring(6..7)
+            )
             mapViewModel.updatetelno(telno)
             mapViewModel.updateaddr(addr)
 
-//            if (marker.infoWindow == null) {
-//                // 현재 마커에 정보 창이 열려있지 않을 경우 엶
-////                infoWindow.open(marker)
-//            } else {
-//                // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
-////                infoWindow.close()
-//            }
+            // 좌표계산
+            val locationA = Location("Point A")
+            locationA.longitude = y
+            locationA.latitude = x
+            val locationB = Location("Point B")
+            locationB.longitude = mapViewModel.userposition.value!!.first
+            locationB.latitude = mapViewModel.userposition.value!!.second
+            if(locationA.distanceTo(locationB).toInt() >= 1000){
+                mapViewModel.updatedist(String.format("%.1f", (locationA.distanceTo(locationB) / 1000)) + "km")
+            }else{
+                mapViewModel.updatedist(locationA.distanceTo(locationB).toInt().toString() + "m")
+            }
             true
         }
 
-
-//        infoWindowlist.add(infoWindow)
         marker.onClickListener = listener
 
-        //네이버맵 적용
         marker.map = naverMap
     }
 
-    inner class GpsThread : Thread() {
-        private var isRunning = true
+    inner class UserPositionThread : Thread() {
         override fun run() {
-            while (isRunning) {
-                try {
-                    sleep(1000)
-                    if (isgpsondata) {
-                        Handler(Looper.getMainLooper()).post {
-                            val cameraUpdate = CameraUpdate.scrollTo(LatLng(latitude, longitude))
-                            naverMap.moveCamera(cameraUpdate)
-                            isRunning = false
-                            val hospitaldata = hospitalDB.HospitalInfoDao().getallHospital()
-                            Log.d("병원정보", hospitaldata.toString())
-                            for (i in hospitaldata) {
-                                if (latitude - 0.03 <= i.YPosWgs84 && i.YPosWgs84 <= latitude + 0.03 &&
-                                    longitude - 0.03 <= i.XPosWgs84 && i.XPosWgs84 <= longitude + 0.03
-                                ) {
-                                    setMarker(
-                                        i.YPosWgs84,
-                                        i.XPosWgs84,
-                                        i.yadmNm,
-                                        i.addr,
-                                        i.ratPsblYn,
-                                        i.pcrPsblYn,
-                                        i.telno,
-                                        i.mgtStaDd,
-                                        i.recuClCd
-                                    )
-                                }
-                            }
-
-                            naverMap.setOnMapClickListener { pointF: PointF, latLng: LatLng ->
-                                for (i in infoWindowlist) {
-                                    i.close()
-                                }
-                                binding.mapHospitalContainer.visibility = View.INVISIBLE
-                            }
-                        }
-                    }
-                } catch (e: Exception) {
-                    isRunning = false
-                    this.interrupt()
+            while(true){
+                try{
+                    sleep(2000)
+                    getLastKnownLocation()
+                }catch (e : java.lang.Exception){
+                    break
                 }
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "MapActivity"
     }
 }
