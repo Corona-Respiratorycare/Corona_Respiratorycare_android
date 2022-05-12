@@ -61,9 +61,10 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
         binding.mapViewModel = mapViewModel
         binding.lifecycleOwner = this
-        userpositionThread = UserPositionThread()
+//        userpositionThread = UserPositionThread()
         // 네이버 지도 동기화
         binding.mapMapView.getMapAsync(this)
+
         // 현재위치 가져오기
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         // DB인스턴트 넣기
@@ -85,7 +86,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
             val list =
                 packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
             // 설치되어 있지 않다면
-            if (list == null || list.isEmpty()) {
+            if (list.isEmpty()) {
                 // 마켓으로 이동
                 this.startActivity(
                     Intent(
@@ -98,7 +99,6 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
                 this.startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
-//                        Uri.parse("nmap://search?query=${it}&appname=com.covidproject.covid_respiratorycare")
                         Uri.parse("nmap://route/public?dlat=${it.first}&dlng=${it.second}&dname=${it.third}&appname=com.covidproject.covid_respiratorycare")
                     )
                 )
@@ -120,8 +120,9 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
 
     fun setMarkerbyUserPosition() {
         try {
-                runOnUiThread {
+            runOnUiThread {
                 val hospitaldata = hospitalDB.HospitalInfoDao().getallHospital()
+                Log.d(TAG,hospitaldata.toString())
                 for (i in hospitaldata) {
                     if (mapViewModel.userposition.value!!.first - 0.03 <= i.YPosWgs84 && i.YPosWgs84 <= mapViewModel.userposition.value!!.first + 0.03 &&
                         mapViewModel.userposition.value!!.second - 0.03 <= i.XPosWgs84 && i.XPosWgs84 <= mapViewModel.userposition.value!!.second + 0.03
@@ -146,15 +147,12 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         } catch (e: Exception) {
         }
     }
-    private val coroutinesScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun initView() {
         tedPermission()
-
         binding.mapBackIv.setOnClickListener {
             finish()
         }
-
     }
 
     override fun onStart() {
@@ -195,7 +193,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         binding.mapMapView.onLowMemory()
     }
 
-    fun getLastKnownLocation() : Unit{
+    fun getLastKnownLocation() {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -206,22 +204,20 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         ) {
             return
         } else {
-            var latitude : Double = 0.0
-            var longitude : Double = 0.0
-                fusedLocationClient.lastLocation
-                    .addOnSuccessListener { location ->
-                        if (location != null) {
-                            Log.d(TAG,"${location.latitude} + ${location.longitude}")
-                            mapViewModel.updateuserposition(Pair(location.latitude,location.longitude))
-                        }
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location ->
+                    if (location != null) {
+                        Log.d(TAG,"${location.latitude} + ${location.longitude}")
+                        mapViewModel.updateuserposition(Pair(location.latitude,location.longitude))
                     }
+                }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         binding.mapMapView.onDestroy()
-        userpositionThread.interrupt()
+//        userpositionThread.interrupt()
     }
 
     override fun onMapReady(p0: NaverMap) {
@@ -255,7 +251,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         startday: String,
         hospitalcode: Int
     ) {
-        var marker = Marker()
+        val marker = Marker()
         marker.position = LatLng(y, x)
         marker.icon = OverlayImage.fromResource(R.drawable.icon_hospital_marker)
 //        marker.icon = MarkerIcons.BLACK
@@ -311,7 +307,6 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         }
 
         marker.onClickListener = listener
-
         marker.map = naverMap
     }
 

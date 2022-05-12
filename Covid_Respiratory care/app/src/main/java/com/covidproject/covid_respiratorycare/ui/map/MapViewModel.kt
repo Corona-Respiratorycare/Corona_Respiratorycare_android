@@ -73,14 +73,13 @@ class MapViewModel : ViewModel() {
     }
 
     private val _telEvent = MutableLiveData<MapEvent<String>>()
-    private val _naverAppEvent = MutableLiveData<MapEvent<Triple<String,String,String>>>()
     val telEvent : LiveData<MapEvent<String>> get() = _telEvent
-    val naverAppEvent : LiveData<MapEvent<Triple<String,String,String>>> get() = _naverAppEvent
-
     fun onTelEvent(text : String){
         _telEvent.value = MapEvent(text)
     }
 
+    private val _naverAppEvent = MutableLiveData<MapEvent<Triple<String,String,String>>>()
+    val naverAppEvent : LiveData<MapEvent<Triple<String,String,String>>> get() = _naverAppEvent
     fun onNaverAppEvent(lat : String, lng : String, hospitalname : String){
         _naverAppEvent.value = MapEvent(Triple(lat,lng,hospitalname))
     }
@@ -93,6 +92,7 @@ class MapViewModel : ViewModel() {
         _israt.value = ""
         _hospitalcode.value = ""
         _addr.value = ""
+//        _userposition.value = Pair(0.0,0.0)
     }
 
 }

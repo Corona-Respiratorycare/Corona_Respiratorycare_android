@@ -19,9 +19,7 @@ open class MapEvent<out T>(private val content: T) {
         }
     }
 
-    /**
-     * 이벤트의 처리 여부에 상관 없이 값을 반환합니다.
-     */
+    // 이벤트의 처리 여부에 상관 없이 값을 반환
     fun peekContent(): T = content
 }
 

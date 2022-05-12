@@ -12,16 +12,16 @@ data class HopitalInfoResult(
 
 @Entity(tableName = "HospitalTable")
 data class HospitalInfo(
-    val index: Int,
-    val XPosWgs84: Double,
-    val YPosWgs84: Double,
-    val addr: String,
-    val mgtStaDd: String, // 이건뭐지
-    val pcrPsblYn: Boolean, // pcr 가능여부
-    val ratPsblYn: Boolean, // rat 가능여부
-    val recuClCd: Int, // 요양종별코드 11, 21, 31
-    val telno: String, // 전화번호
-    val yadmNm: String // 병원 이름
+    @SerializedName("index")val index: Int,
+    @SerializedName("XPosWgs84")val XPosWgs84: Double,
+    @SerializedName("YPosWgs84")val YPosWgs84: Double,
+    @SerializedName("addr")val addr: String,
+    @SerializedName("mgtStaDd")val mgtStaDd: String, // 이건뭐지
+    @SerializedName("pcrPsblYn")val pcrPsblYn: Boolean, // pcr 가능여부
+    @SerializedName("ratPsblYn")val ratPsblYn: Boolean, // rat 가능여부
+    @SerializedName("recuClCd")val recuClCd: Int, // 요양종별코드 11, 21, 31
+    @SerializedName("telno")val telno: String, // 전화번호
+    @SerializedName("yadmNm") val yadmNm: String // 병원 이름
 ){
     @PrimaryKey(autoGenerate = true) var id : Int = 0
 }

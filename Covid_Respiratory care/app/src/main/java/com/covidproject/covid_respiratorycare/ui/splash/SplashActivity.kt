@@ -36,10 +36,10 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
 //        val editor: SharedPreferences.Editor = spf?.edit()!!
 //        editor.putString("Update_date","asdasd")
 //        editor.apply()
+        mappingService.getUpdateInfo()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            mappingService.getUpdateInfo()
-        }
+//        CoroutineScope(Dispatchers.IO).launch {
+//        }
 
     }
 
@@ -50,6 +50,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
     override fun onMappingSuccess(hopitalList: List<HospitalInfo>) {
         hospitalDB.HospitalInfoDao().deleteAllHospital()
         for(i in hopitalList){
+            Log.d("병원",i.toString())
             hospitalDB.HospitalInfoDao().insert(i)
         }
         val intent = Intent(this, MainActivity::class.java)
@@ -61,24 +62,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
 
     }
 
-    private fun tedPermission() {
-        val permissionListener = object : PermissionListener {
-            override fun onPermissionGranted() {}
-            override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
-                Log.d("test0","설정에서 권한을 허가 해주세요.")
-            }
-        }
-        TedPermission.with(this)
-            .setPermissionListener(permissionListener)
-            .setRationaleMessage("서비스 사용을 위해서 몇가지 권한이 필요합니다.")
-            .setDeniedMessage("[설정] > [권한] 에서 권한을 설정할 수 있습니다.")
-            .setPermissions(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-            .check()
-    }
-
     override fun onUpdateMapLoading() {
         binding.splashLoadingTv.text = "최신 정보 확인 중"
     }
@@ -86,7 +69,9 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
     override fun onUpdateMapSuccess(date: String) {
         val spf = getSharedPreferences("DateInfo",MODE_PRIVATE)
         val spfdate = spf.getString("Update_date","no")
+        Log.d("Result","1")
         if(date == spfdate){
+            Log.d("Result","2")
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -94,12 +79,11 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
                 binding.splashLoadingTv.text = "최신 정보 업데이트 완료"
             }, 1000)
         }else{
-            val editor: SharedPreferences.Editor = spf?.edit()!!
+            mappingService.getHospitalInfo()
+            val editor: SharedPreferences.Editor = spf.edit()
             editor.putString("Update_date",date)
             editor.apply()
-            CoroutineScope(Dispatchers.IO).launch {
-                mappingService.getHospitalInfo()
-            }
+            Log.d("Result","3")
         }
     }
 

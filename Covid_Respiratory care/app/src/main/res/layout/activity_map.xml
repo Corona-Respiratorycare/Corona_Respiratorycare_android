@@ -130,6 +130,7 @@
                             android:textColor="@color/dpblue_80"
                             android:textSize="20sp"
                             android:textStyle="bold" />
+
                     </LinearLayout>
 
 
