@@ -34,6 +34,6 @@ https://user-images.githubusercontent.com/14178811/168139358-34cded96-e95b-4c70-
 
 * 타앱과 연동을 위한 URL Scheme
 
-* Kotlin에서의 Generic이 무엇인가
+* [Kotlin에서의 Generic이 무엇인가](https://velog.io/@cksgodl/Kotlin%EC%97%90%EC%84%9C-Generic%EA%B3%BC-type-parameter-T)
 
 * +) Motion Layout
