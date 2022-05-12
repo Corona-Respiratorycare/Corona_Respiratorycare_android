@@ -18,16 +18,15 @@ class MappingService {
     }
 
 
-    fun getHospitalInfo() {
+    suspend fun getHospitalInfo() {
         Log.d("Resul","4.1")
         try{
             val mappingService = baseretrofit.create(MappingRetrofitInterface::class.java)
-            mappingView.onMappingLoading()
             Log.d("Result","4")
             val mappingresult = mappingService.getHospitalInfo()
-            Log.d("Result",mappingresult.HopitalInfoList.toString())
+            Log.d("Result",mappingresult.toString())
             if (mappingresult.code == 1000){
-                mappingView.onMappingSuccess(mappingresult.HopitalInfoList)
+                mappingView.onMappingSuccess(mappingresult.result)
             }
             else{
                 mappingView.onMappingFailure(5000,"네트워크 오류일 가능성이 큼")
@@ -37,20 +36,22 @@ class MappingService {
         }
     }
 
-    fun getUpdateInfo() {
-        val mappingService = baseretrofit.create(MappingRetrofitInterface::class.java)
+    suspend fun getUpdateInfo() {
+        val updateDateService = baseretrofit.create(MappingRetrofitInterface::class.java)
         updateMapView.onUpdateMapLoading()
-//        try{
-            val mappingresult = mappingService.getUpdateInfo()
-            if (mappingresult.code == 1000){
-                updateMapView.onUpdateMapSuccess(mappingresult.updatedate.updated_date)
+
+        try{
+            val updateDateResult = updateDateService.getUpdateInfo()
+            Log.d("Result",updateDateResult.result.updated_date.toString())
+            if (updateDateResult.code == 1000){
+                updateMapView.onUpdateMapSuccess(updateDateResult.result.updated_date)
             }
             else{
                 updateMapView.onUpdateMapFailure(5000,"네트워크 오류일 가능성이 큼")
             }
-//        }catch (e :Exception){
-//            Log.d("SplashAcitivity Error",e.toString())
-//        }
+        }catch (e :Exception){
+            Log.d("SplashAcitivity Error",e.toString())
+        }
 
     }
 

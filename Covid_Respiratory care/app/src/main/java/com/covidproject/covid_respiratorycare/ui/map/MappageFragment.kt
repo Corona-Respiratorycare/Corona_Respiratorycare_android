@@ -32,10 +32,9 @@ import androidx.fragment.app.FragmentManager
 import com.covidproject.covid_respiratorycare.R
 import com.covidproject.covid_respiratorycare.data.HospitalDatabase
 import com.covidproject.covid_respiratorycare.databinding.FragmentMappageBinding
-import com.covidproject.covid_respiratorycare.ui.Service.mapping.HospitalInfo
+//import com.covidproject.covid_respiratorycare.ui.Service.mapping.HospitalInfo
 import com.covidproject.covid_respiratorycare.ui.Service.mapping.MappingService
 import com.covidproject.covid_respiratorycare.ui.Service.mapping.MappingView
-import com.google.firebase.database.*
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import kotlinx.coroutines.CoroutineScope
@@ -52,7 +51,7 @@ class MappageFragment : BaseFragment<FragmentMappageBinding>(R.layout.fragment_m
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     //파이어베이스 접근하기 위한 객체
-    private lateinit var database: DatabaseReference
+//    private lateinit var database: DatabaseReference
     //전체 Count 및 Database 버젼 관리
     private var totalcount : Int = 0
     //Info 리스트
@@ -82,7 +81,7 @@ class MappageFragment : BaseFragment<FragmentMappageBinding>(R.layout.fragment_m
 
         //현재위치 가져오기
         getLastKnownLocation()
-        database = FirebaseDatabase.getInstance().reference
+//        database = FirebaseDatabase.getInstance().reference
         hospitalDB = HospitalDatabase.getInstance(requireContext())!!
 //        mappingService.setmappingView(this)
 //        CoroutineScope(Dispatchers.IO).launch {

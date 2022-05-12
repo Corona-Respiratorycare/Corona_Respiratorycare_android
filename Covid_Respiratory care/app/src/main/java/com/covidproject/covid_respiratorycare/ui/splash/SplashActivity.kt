@@ -8,9 +8,10 @@ import android.os.Looper
 import android.util.Log
 import com.covidproject.covid_respiratorycare.R
 import com.covidproject.covid_respiratorycare.data.HospitalDatabase
+import com.covidproject.covid_respiratorycare.data.ResultX
 import com.covidproject.covid_respiratorycare.databinding.ActivitySplashBinding
 import com.covidproject.covid_respiratorycare.ui.BaseActivity
-import com.covidproject.covid_respiratorycare.ui.Service.mapping.HospitalInfo
+//import com.covidproject.covid_respiratorycare.ui.Service.mapping.HospitalInfo
 import com.covidproject.covid_respiratorycare.ui.Service.mapping.MappingService
 import com.covidproject.covid_respiratorycare.ui.Service.mapping.MappingView
 import com.covidproject.covid_respiratorycare.ui.Service.mapping.UpdateMapView
@@ -36,10 +37,10 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
 //        val editor: SharedPreferences.Editor = spf?.edit()!!
 //        editor.putString("Update_date","asdasd")
 //        editor.apply()
-        mappingService.getUpdateInfo()
 
-//        CoroutineScope(Dispatchers.IO).launch {
-//        }
+        CoroutineScope(Dispatchers.IO).launch {
+             mappingService.getUpdateInfo()
+        }
 
     }
 
@@ -47,7 +48,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
         binding.splashLoadingTv.text = "최신 정보 업데이트 중"
     }
 
-    override fun onMappingSuccess(hopitalList: List<HospitalInfo>) {
+    override fun onMappingSuccess(hopitalList: List<ResultX>) {
         hospitalDB.HospitalInfoDao().deleteAllHospital()
         for(i in hopitalList){
             Log.d("병원",i.toString())
@@ -63,7 +64,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
     }
 
     override fun onUpdateMapLoading() {
-        binding.splashLoadingTv.text = "최신 정보 확인 중"
+//        binding.splashLoadingTv.text = "최신 정보 확인 중"
     }
 
     override fun onUpdateMapSuccess(date: String) {
@@ -72,6 +73,9 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
         Log.d("Result","1")
         if(date == spfdate){
             Log.d("Result","2")
+//            CoroutineScope(Dispatchers.IO).launch {
+//                mappingService.getHospitalInfo()
+//            }
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -79,7 +83,9 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
                 binding.splashLoadingTv.text = "최신 정보 업데이트 완료"
             }, 1000)
         }else{
-            mappingService.getHospitalInfo()
+            CoroutineScope(Dispatchers.IO).launch {
+                mappingService.getHospitalInfo()
+            }
             val editor: SharedPreferences.Editor = spf.edit()
             editor.putString("Update_date",date)
             editor.apply()

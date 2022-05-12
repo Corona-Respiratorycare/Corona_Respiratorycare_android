@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.google.gson.Gson
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
@@ -14,7 +15,8 @@ val gson = Gson()
 val baseretrofit = Retrofit.Builder()
     .baseUrl("https://aws-api.10cheon00.xyz") //베이스 URL 넣기
     .addConverterFactory(ScalarsConverterFactory.create())
-    .addConverterFactory(GsonConverterFactory.create(gson))
+    .addConverterFactory(GsonConverterFactory.create())
+    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
     .build()
 
 val openapiretrofit = Retrofit.Builder()

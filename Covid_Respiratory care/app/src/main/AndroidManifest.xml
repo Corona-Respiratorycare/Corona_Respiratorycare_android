@@ -15,9 +15,7 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.Covid_Respiratorycare">
-<!--asdasd
 
--->
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="gi0qse5ddg" />

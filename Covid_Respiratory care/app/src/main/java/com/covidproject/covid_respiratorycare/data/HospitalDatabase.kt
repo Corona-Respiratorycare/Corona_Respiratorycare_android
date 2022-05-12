@@ -4,9 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.covidproject.covid_respiratorycare.ui.Service.mapping.HospitalInfo
 
-@Database(entities = [HospitalInfo::class], version = 2)
+@Database(entities = [ResultX::class], version = 3)
 abstract class HospitalDatabase : RoomDatabase() {
     abstract fun HospitalInfoDao() : HospitalInfodb_Dao
 
