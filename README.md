@@ -3,6 +3,8 @@
 
 https://user-images.githubusercontent.com/14178811/168139358-34cded96-e95b-4c70-95a8-61276c15478d.mp4
 
+## [개발과정 및 Notion](https://www.notion.so/Corona_Respiratorycare-9d1dfe202b7c4069b994f2b92d722189)
+
 ## Develop Tag
 
 * RoomDB
