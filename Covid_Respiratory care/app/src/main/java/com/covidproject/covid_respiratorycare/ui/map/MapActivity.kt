@@ -75,6 +75,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
 
         // 전화 열기
         mapViewModel.telEvent.eventObserve(this) { it ->
+            // it == String
             startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + it.replace("-", ""))))
         }
 

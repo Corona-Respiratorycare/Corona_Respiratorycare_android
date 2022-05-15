@@ -6,6 +6,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 
+// out T는 읽기, 리턴만 할 수 있다.
 open class MapEvent<out T>(private val content: T) {
     var hasBeenHandled = false
         private set
@@ -26,10 +27,13 @@ open class MapEvent<out T>(private val content: T) {
 @MainThread
 inline fun <T> LiveData<MapEvent<T>>.eventObserve(
     owner: LifecycleOwner,
+    // crossinline으로 내부에서 함수로 오는 파라미터를 쓸 수 있다.
     crossinline onChanged: (T) -> Unit
 ): Observer<MapEvent<T>> {
     val wrappedObserver = Observer<MapEvent<T>> { t ->
+        // t.getContent.. 가 null 이 아닐때 실행됨
         t.getContentIfNotHandled()?.let {
+            // 이름 없이 호출되는 함수 invoke
             onChanged.invoke(it)
         }
     }

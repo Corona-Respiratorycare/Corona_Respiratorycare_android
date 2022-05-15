@@ -81,6 +81,7 @@ class MapViewModel : ViewModel() {
     private val _naverAppEvent = MutableLiveData<MapEvent<Triple<String,String,String>>>()
     val naverAppEvent : LiveData<MapEvent<Triple<String,String,String>>> get() = _naverAppEvent
     fun onNaverAppEvent(lat : String, lng : String, hospitalname : String){
+        // Content를 T로 생성 -> 인자하나로 그냥 Triple로 다 넣어버림
         _naverAppEvent.value = MapEvent(Triple(lat,lng,hospitalname))
     }
 
