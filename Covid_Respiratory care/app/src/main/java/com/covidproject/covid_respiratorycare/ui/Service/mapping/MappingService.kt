@@ -19,12 +19,9 @@ class MappingService {
 
 
     suspend fun getHospitalInfo() {
-        Log.d("Resul","4.1")
         try{
             val mappingService = baseretrofit.create(MappingRetrofitInterface::class.java)
-            Log.d("Result","4")
             val mappingresult = mappingService.getHospitalInfo()
-            Log.d("Result",mappingresult.toString())
             if (mappingresult.code == 1000){
                 mappingView.onMappingSuccess(mappingresult.result)
             }

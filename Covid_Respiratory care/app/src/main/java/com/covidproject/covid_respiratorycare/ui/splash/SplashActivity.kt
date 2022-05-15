@@ -1,14 +1,17 @@
 package com.covidproject.covid_respiratorycare.ui.splash
 
-import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.lifecycle.ViewModelProvider
 import com.covidproject.covid_respiratorycare.R
 import com.covidproject.covid_respiratorycare.data.HospitalDatabase
+import com.covidproject.covid_respiratorycare.data.HospitalRepository
+import com.covidproject.covid_respiratorycare.data.HospitalViewModel
 import com.covidproject.covid_respiratorycare.data.ResultX
+import com.covidproject.covid_respiratorycare.data.datastore.DataStoreHospitalUpdate
 import com.covidproject.covid_respiratorycare.databinding.ActivitySplashBinding
 import com.covidproject.covid_respiratorycare.ui.BaseActivity
 //import com.covidproject.covid_respiratorycare.ui.Service.mapping.HospitalInfo
@@ -18,28 +21,27 @@ import com.covidproject.covid_respiratorycare.ui.Service.mapping.UpdateMapView
 import com.covidproject.covid_respiratorycare.ui.main.MainActivity
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 
-class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_splash), MappingView, UpdateMapView {
+class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_splash), MappingView,
+    UpdateMapView {
 
     private val mappingService = MappingService()
-    lateinit var hospitalDB: HospitalDatabase
+    private lateinit var hospitalViewModel: HospitalViewModel
+    private lateinit var hospitalUpdateManager: DataStoreHospitalUpdate
 
     override fun initView() {
 //        tedPermission()
-        hospitalDB = HospitalDatabase.getInstance(this)!!
+        binding.lifecycleOwner = this
+        hospitalViewModel = ViewModelProvider(this).get(HospitalViewModel::class.java)
+        hospitalUpdateManager = DataStoreHospitalUpdate(this)
+
         mappingService.setmappingView(this)
         mappingService.setupdateMapView(this)
 
-//        val spf = getSharedPreferences("DateInfo",MODE_PRIVATE)
-//        val editor: SharedPreferences.Editor = spf?.edit()!!
-//        editor.putString("Update_date","asdasd")
-//        editor.apply()
-
         CoroutineScope(Dispatchers.IO).launch {
-             mappingService.getUpdateInfo()
+            mappingService.getUpdateInfo()
         }
 
     }
@@ -49,10 +51,10 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
     }
 
     override fun onMappingSuccess(hopitalList: List<ResultX>) {
-        hospitalDB.HospitalInfoDao().deleteAllHospital()
-        for(i in hopitalList){
-            Log.d("병원",i.toString())
-            hospitalDB.HospitalInfoDao().insert(i)
+        hospitalViewModel.deleteAlldeleteAllHospital()
+        for (i in hopitalList) {
+            Log.d("병원", i.toString())
+            hospitalViewModel.insert(i)
         }
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -64,33 +66,34 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
     }
 
     override fun onUpdateMapLoading() {
-//        binding.splashLoadingTv.text = "최신 정보 확인 중"
     }
 
     override fun onUpdateMapSuccess(date: String) {
-        val spf = getSharedPreferences("DateInfo",MODE_PRIVATE)
-        val spfdate = spf.getString("Update_date","no")
-        Log.d("Result","1")
-        if(date == spfdate){
-            Log.d("Result","2")
-//            CoroutineScope(Dispatchers.IO).launch {
-//                mappingService.getHospitalInfo()
-//            }
+//        val spf = getSharedPreferences("DateInfo",MODE_PRIVATE)
+//        val spfdate = spf.getString("Update_date","no")
+//        GlobalScope
+
+        var tempdate = ""
+        CoroutineScope(Dispatchers.IO).launch {
+            hospitalUpdateManager.text.collect(){
+                tempdate = it
+            }
+        }
+        if (date == tempdate) {
             Handler(Looper.getMainLooper()).postDelayed({
-                val intent = Intent(this, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                val intent = Intent(this@SplashActivity, MainActivity::class.java)
+                intent.flags =
+                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 binding.splashLoadingTv.text = "최신 정보 업데이트 완료"
             }, 1000)
-        }else{
+        } else {
             CoroutineScope(Dispatchers.IO).launch {
                 mappingService.getHospitalInfo()
+                hospitalUpdateManager.setText(date)
             }
-            val editor: SharedPreferences.Editor = spf.edit()
-            editor.putString("Update_date",date)
-            editor.apply()
-            Log.d("Result","3")
         }
+
     }
 
     override fun onUpdateMapFailure(code: Int, message: String) {

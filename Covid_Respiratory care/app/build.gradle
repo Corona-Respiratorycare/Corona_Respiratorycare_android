@@ -115,5 +115,9 @@ dependencies {
     // 크롤링을 위한 jsoup
     implementation 'org.jsoup:jsoup:1.13.1'
 
+    // dataStore
+    implementation "androidx.datastore:datastore-preferences:1.0.0-alpha07"
+    implementation "androidx.datastore:datastore-core:1.0.0-alpha07"
+
 
 }

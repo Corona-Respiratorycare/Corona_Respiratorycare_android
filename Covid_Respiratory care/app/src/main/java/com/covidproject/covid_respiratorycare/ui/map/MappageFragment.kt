@@ -29,8 +29,10 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.MarkerIcons
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.ViewModelProvider
 import com.covidproject.covid_respiratorycare.R
 import com.covidproject.covid_respiratorycare.data.HospitalDatabase
+import com.covidproject.covid_respiratorycare.data.HospitalViewModel
 import com.covidproject.covid_respiratorycare.databinding.FragmentMappageBinding
 //import com.covidproject.covid_respiratorycare.ui.Service.mapping.HospitalInfo
 import com.covidproject.covid_respiratorycare.ui.Service.mapping.MappingService
@@ -44,7 +46,8 @@ import kotlinx.coroutines.launch
 
 class MappageFragment : BaseFragment<FragmentMappageBinding>(R.layout.fragment_mappage), OnMapReadyCallback {
 
-    lateinit var hospitalDB: HospitalDatabase
+//    lateinit var hospitalDB: HospitalDatabase
+    private lateinit var hospitalViewModel: HospitalViewModel
     private lateinit var naverMap : NaverMap
     private var latitude : Double = 0.0
     private var longitude  : Double = 0.0
@@ -52,16 +55,12 @@ class MappageFragment : BaseFragment<FragmentMappageBinding>(R.layout.fragment_m
 
     //파이어베이스 접근하기 위한 객체
 //    private lateinit var database: DatabaseReference
-    //전체 Count 및 Database 버젼 관리
-    private var totalcount : Int = 0
     //Info 리스트
     val infoWindowlist = ArrayList<InfoWindow>()
 
     private var isgpson: MutableLiveData<Boolean> = MutableLiveData()
     private var isgpsondata = false
     private val gpsthread = GpsThread()
-
-    private val mappingService = MappingService()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,7 +70,7 @@ class MappageFragment : BaseFragment<FragmentMappageBinding>(R.layout.fragment_m
         binding = FragmentMappageBinding.inflate(layoutInflater)
         binding.mapView.onCreate(savedInstanceState)
         binding.mapView.getMapAsync(this)
-
+        hospitalViewModel = ViewModelProvider(requireActivity()).get(HospitalViewModel::class.java)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         isgpson.observe(this, androidx.lifecycle.Observer {
             isgpsondata = it
@@ -82,7 +81,7 @@ class MappageFragment : BaseFragment<FragmentMappageBinding>(R.layout.fragment_m
         //현재위치 가져오기
         getLastKnownLocation()
 //        database = FirebaseDatabase.getInstance().reference
-        hospitalDB = HospitalDatabase.getInstance(requireContext())!!
+//        hospitalDB = HospitalDatabase.getInstance(requireContext())!!
 //        mappingService.setmappingView(this)
 //        CoroutineScope(Dispatchers.IO).launch {
 //            mappingService.getHospitalInfo()
@@ -226,8 +225,8 @@ class MappageFragment : BaseFragment<FragmentMappageBinding>(R.layout.fragment_m
                             val cameraUpdate = CameraUpdate.scrollTo(LatLng(latitude,longitude))
                             naverMap.moveCamera(cameraUpdate)
                             isRunning = false
-                            var hospitaldata = hospitalDB.HospitalInfoDao().getallHospital()
-                            for (i in hospitaldata){
+//                            var hospitaldata = hospitalDB.HospitalInfoDao().getallHospital()
+                            for (i in hospitalViewModel.getAll().value!!){
                                 if( latitude-0.03 <= i.YPosWgs84  && i.YPosWgs84 <= latitude+0.03 &&
                                     longitude-0.03 <= i.XPosWgs84 && i.XPosWgs84 <= longitude+0.03){
                                     setMarker(i.YPosWgs84,i.XPosWgs84,i.yadmNm,i.addr,i.ratPsblYn,i.pcrPsblYn)

@@ -20,6 +20,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.covidproject.covid_respiratorycare.R
 import com.covidproject.covid_respiratorycare.data.HospitalDatabase
+import com.covidproject.covid_respiratorycare.data.HospitalViewModel
 import com.covidproject.covid_respiratorycare.databinding.ActivityMapBinding
 import com.covidproject.covid_respiratorycare.ui.BaseActivity
 import com.covidproject.covid_respiratorycare.ui.Service.mapping.MappingService
@@ -39,7 +40,7 @@ import kotlinx.coroutines.*
 
 class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnMapReadyCallback {
 
-    lateinit var hospitalDB: HospitalDatabase
+//    lateinit var hospitalDB: HospitalDatabase
     private lateinit var naverMap: NaverMap
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -47,6 +48,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
 
     lateinit var userpositionThread : UserPositionThread
     private lateinit var mapViewModel: MapViewModel
+    private lateinit var hostpitalViewModel: HospitalViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +60,8 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
     }
 
     override fun initViewModel() {
-        mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
+        mapViewModel = ViewModelProvider(this)[MapViewModel::class.java]
+        hostpitalViewModel = ViewModelProvider(this)[HospitalViewModel::class.java]
         binding.mapViewModel = mapViewModel
         binding.lifecycleOwner = this
 //        userpositionThread = UserPositionThread()
@@ -68,7 +71,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         // 현재위치 가져오기
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         // DB인스턴트 넣기
-        hospitalDB = HospitalDatabase.getInstance(this)!!
+//        hospitalDB = HospitalDatabase.getInstance(this)!!
 
         // 전화 열기
         mapViewModel.telEvent.eventObserve(this) { it ->
@@ -121,9 +124,9 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
     fun setMarkerbyUserPosition() {
         try {
             runOnUiThread {
-                val hospitaldata = hospitalDB.HospitalInfoDao().getallHospital()
-                Log.d(TAG,hospitaldata.toString())
-                for (i in hospitaldata) {
+//                val hospitaldata = hospitalDB.HospitalInfoDao().getallHospital()
+//                Log.d(TAG,hospitaldata.toString())
+                for (i in hostpitalViewModel.getAll().value!!) {
                     if (mapViewModel.userposition.value!!.first - 0.03 <= i.YPosWgs84 && i.YPosWgs84 <= mapViewModel.userposition.value!!.first + 0.03 &&
                         mapViewModel.userposition.value!!.second - 0.03 <= i.XPosWgs84 && i.XPosWgs84 <= mapViewModel.userposition.value!!.second + 0.03
                     ) {

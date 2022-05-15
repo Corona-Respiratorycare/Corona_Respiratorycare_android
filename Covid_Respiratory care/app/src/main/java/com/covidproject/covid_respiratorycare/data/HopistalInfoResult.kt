@@ -3,7 +3,7 @@ package com.covidproject.covid_respiratorycare.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-data class HopistalInfoResult_test(
+data class HopistalInfoResult(
     val code: Int,
     val message: String,
     val result: List<ResultX>
