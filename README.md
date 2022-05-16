@@ -26,7 +26,7 @@ https://user-images.githubusercontent.com/14178811/168139358-34cded96-e95b-4c70-
 
 * [XML 파싱 및 크롤링으로 데이터 가져오기](https://velog.io/@cksgodl/%EA%B3%B5%EA%B3%B5%EB%8D%B0%EC%9D%B4%ED%84%B0-XML-%ED%8C%8C%EC%8B%B1-%EB%B0%8F-%ED%81%AC%EB%A1%A4%EB%A7%81%EC%9C%BC%EB%A1%9C-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0)
 
-* RecyclerView 클릭 인터페이스 설정
+* [RecyclerView 클릭 인터페이스 설정](https://velog.io/@cksgodl/RecyclerView-%EA%B0%81%EA%B0%81-%EC%95%84%EC%9D%B4%ED%85%9C%EB%A7%88%EB%8B%A4-%ED%81%B4%EB%A6%AD-%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EC%84%A4%EC%A0%95)
 
 * MPAndroidChart 다루기
 
