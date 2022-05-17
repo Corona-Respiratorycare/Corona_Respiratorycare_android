@@ -38,4 +38,4 @@ https://user-images.githubusercontent.com/14178811/168139358-34cded96-e95b-4c70-
 
 * +) Motion Layout
 
-* Datastore
+* [SharedPreference 말고 Datastore를 사용해 봅시다.](https://velog.io/@cksgodl/SharedPreference-%EB%8C%80%EC%8B%A0-DataStore-%EC%82%AC%EC%9A%A9%ED%95%B4%EB%B3%B4%EA%B8%B0)
