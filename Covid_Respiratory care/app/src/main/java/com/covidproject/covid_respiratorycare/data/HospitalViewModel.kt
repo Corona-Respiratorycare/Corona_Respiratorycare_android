@@ -10,28 +10,23 @@ import kotlinx.coroutines.launch
 
 class HospitalViewModel(application: Application) : AndroidViewModel(application) {
 //class HospitalViewModel(application: Application) : ViewModel() {
-    private lateinit var hospitalRepository : HospitalRepository
-    private lateinit var hospitalList : LiveData<List<ResultX>>
+    private var hospitalRepository : HospitalRepository = HospitalRepository(application)
+    private var hospitalList : LiveData<List<HospitalInfo>> = hospitalRepository.getAllHosptial()
 
-    fun getAll(): LiveData<List<ResultX>>{
-        return hospitalList
+    fun getAll(): LiveData<List<HospitalInfo>>{
+        return this.hospitalList
     }
 
-    fun insert(hospital : ResultX){
-        viewModelScope.launch(Dispatchers.Default) {
+    fun insert(hospital : HospitalInfo){
+        viewModelScope.launch(Dispatchers.IO) {
             hospitalRepository.insert(hospital)
         }
     }
 
     fun deleteAlldeleteAllHospital(){
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             hospitalRepository.deleteAllHospital()
         }
-    }
-
-    init{
-        hospitalRepository = HospitalRepository(application)
-        hospitalList = hospitalRepository.getAllHosptial()
     }
 
 }

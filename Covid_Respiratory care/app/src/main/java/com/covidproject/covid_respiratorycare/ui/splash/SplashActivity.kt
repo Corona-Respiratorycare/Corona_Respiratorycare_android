@@ -7,10 +7,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import com.covidproject.covid_respiratorycare.R
-import com.covidproject.covid_respiratorycare.data.HospitalDatabase
-import com.covidproject.covid_respiratorycare.data.HospitalRepository
-import com.covidproject.covid_respiratorycare.data.HospitalViewModel
-import com.covidproject.covid_respiratorycare.data.ResultX
+import com.covidproject.covid_respiratorycare.data.*
 import com.covidproject.covid_respiratorycare.data.datastore.DataStoreHospitalUpdate
 import com.covidproject.covid_respiratorycare.databinding.ActivitySplashBinding
 import com.covidproject.covid_respiratorycare.ui.BaseActivity
@@ -50,10 +47,10 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
         binding.splashLoadingTv.text = "최신 정보 업데이트 중"
     }
 
-    override fun onMappingSuccess(hopitalList: List<ResultX>) {
+    override fun onMappingSuccess(hopitalList: List<HospitalInfo>) {
         hospitalViewModel.deleteAlldeleteAllHospital()
         for (i in hopitalList) {
-            Log.d("병원", i.toString())
+//            Log.d("병원", i.toString())
             hospitalViewModel.insert(i)
         }
         val intent = Intent(this, MainActivity::class.java)

@@ -20,6 +20,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.covidproject.covid_respiratorycare.R
 import com.covidproject.covid_respiratorycare.data.HospitalDatabase
+import com.covidproject.covid_respiratorycare.data.HospitalInfo
 import com.covidproject.covid_respiratorycare.data.HospitalViewModel
 import com.covidproject.covid_respiratorycare.databinding.ActivityMapBinding
 import com.covidproject.covid_respiratorycare.ui.BaseActivity
@@ -70,14 +71,31 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
 
         // 현재위치 가져오기
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        // DB인스턴트 넣기
-//        hospitalDB = HospitalDatabase.getInstance(this)!!
 
         // 전화 열기
         mapViewModel.telEvent.eventObserve(this) { it ->
-            // it == String
-            startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + it.replace("-", ""))))
+            Log.d(TAG,"이벤트 클릭")
+//            mapViewModel.updateuserposition(Pair(37.5674893,127.1783478))
+//            hostpitalViewModel.insert(HospitalInfo(2.0,2.0,"asd","asd",true,true,10,"asd","asd"))
+             startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + it.replace("-", ""))))
         }
+
+        // 왜 2번씩 실행이 될까용
+        // updateUserPosition이 되기전에 이게 실행되면 오류가 날 것 같음
+        hostpitalViewModel.getAll().observe(this){
+            Log.d(TAG,"이벤트 옵저버")
+            // 병원 정보 가져와서 찍기
+            setMarkerbyUserPosition(it)
+        }
+
+//        mapViewModel.telEvent.observe(this) { event ->
+//            Log.d("MapEvent Before : ",event.hasBeenHandled.toString())
+//            event.getContentIfNotHandled()?.let{ telno ->
+//                Log.d("MapEvent Doing : ", "이벤트 진행 중")
+////                startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + telno.replace("-", ""))))
+//            }
+//            Log.d("MapEvent After : ",event.hasBeenHandled.toString())
+//        }
 
         // 이벤트리스너로 네이버 맵 키기
         mapViewModel.naverAppEvent.eventObserve(this) { it ->
@@ -114,7 +132,6 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
             val cameraUpdate = CameraUpdate.scrollTo(LatLng(it.first, it.second))
             naverMap.moveCamera(cameraUpdate)
             setUserPositionMarker(it.first,it.second)
-            setMarkerbyUserPosition()
         })
 
         // 사용자 위치 2초마다 바꾸는 쓰레드
@@ -122,12 +139,10 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
 
     }
 
-    fun setMarkerbyUserPosition() {
+    fun setMarkerbyUserPosition(hospitalList : List<HospitalInfo>) {
         try {
             runOnUiThread {
-//                val hospitaldata = hospitalDB.HospitalInfoDao().getallHospital()
-//                Log.d(TAG,hospitaldata.toString())
-                for (i in hostpitalViewModel.getAll().value!!) {
+                for (i in hospitalList) {
                     if (mapViewModel.userposition.value!!.first - 0.03 <= i.YPosWgs84 && i.YPosWgs84 <= mapViewModel.userposition.value!!.first + 0.03 &&
                         mapViewModel.userposition.value!!.second - 0.03 <= i.XPosWgs84 && i.XPosWgs84 <= mapViewModel.userposition.value!!.second + 0.03
                     ) {
@@ -270,6 +285,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
 
         val listener = Overlay.OnClickListener { overlay ->
             binding.mapHospitalContainer.visibility = View.VISIBLE
+            // 뷰모델에 정보채워 넣기
             mapViewModel.updatehospitalname(name)
             // 11:종합병원 / 21:병원 / 31:의원
             mapViewModel.updatehospitalcode(

@@ -7,16 +7,16 @@ import androidx.room.*
 @Dao
 interface HospitalInfodb_Dao {
     @Insert
-    fun insert(hospitalInfodb: ResultX)
+    fun insert(hospitalInfodb: HospitalInfo)
 
     @Update
-    fun update(hospitalInfodb: ResultX)
+    fun update(hospitalInfodb: HospitalInfo)
 
     @Delete
-    fun delete(hospitalInfodb: ResultX)
+    fun delete(hospitalInfodb: HospitalInfo)
 
     @Query("SELECT * FROM HospitalTable") // 테이블의 모든 값을 가져와라
-    fun getallHospital(): LiveData<List<ResultX>>
+    fun getallHospital(): LiveData<List<HospitalInfo>>
 
     @Query("DELETE FROM HospitalTable")
     fun deleteAllHospital()

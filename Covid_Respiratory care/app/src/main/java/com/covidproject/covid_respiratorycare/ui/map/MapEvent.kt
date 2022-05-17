@@ -34,6 +34,7 @@ inline fun <T> LiveData<MapEvent<T>>.eventObserve(
         // t.getContent.. 가 null 이 아닐때 실행됨
         t.getContentIfNotHandled()?.let {
             // 이름 없이 호출되는 함수 invoke
+            // true일 경우 다시 false로 돌려 놓은 후에 이벤트가 호출되었다고 알립니다.
             onChanged.invoke(it)
         }
     }

@@ -2,15 +2,16 @@ package com.covidproject.covid_respiratorycare.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 
 data class HopistalInfoResult(
     val code: Int,
     val message: String,
-    val result: List<ResultX>
+    @SerializedName("result")val result: List<HospitalInfo>
 )
 
 @Entity(tableName = "HospitalTable")
-data class ResultX(
+data class HospitalInfo(
     val XPosWgs84: Double,
     val YPosWgs84: Double,
     val addr: String,

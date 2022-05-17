@@ -1,10 +1,10 @@
 package com.covidproject.covid_respiratorycare.ui.Service.mapping
 
-import com.covidproject.covid_respiratorycare.data.ResultX
+import com.covidproject.covid_respiratorycare.data.HospitalInfo
 
 interface MappingView {
     fun onMappingLoading()
-    fun onMappingSuccess(hopitalList: List<ResultX>)
+    fun onMappingSuccess(hopitalList: List<HospitalInfo>)
     fun onMappingFailure(code:Int, message:String)
 }
 

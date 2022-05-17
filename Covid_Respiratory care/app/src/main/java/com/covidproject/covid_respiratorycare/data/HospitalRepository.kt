@@ -13,15 +13,15 @@ import java.lang.Exception
 class HospitalRepository(application: Application) : ViewModel() {
     private val hospitalDB: HospitalDatabase = HospitalDatabase.getInstance(application)!!
     private val hospitalDao = hospitalDB.HospitalInfoDao()
-    private val hospitalLlist : LiveData<List<ResultX>> = hospitalDao.getallHospital()
+    private val hospitalLlist : LiveData<List<HospitalInfo>> = hospitalDao.getallHospital()
     private val TAG = "HospitalRepository"
 
-    fun getAllHosptial() : LiveData<List<ResultX>>{
-        return hospitalLlist
+    fun getAllHosptial() : LiveData<List<HospitalInfo>>{
+        return this.hospitalLlist
     }
 
-    fun insert(hospital : ResultX) {
-        viewModelScope.launch(Dispatchers.Default) {
+    fun insert(hospital : HospitalInfo) {
+        viewModelScope.launch(Dispatchers.IO) {
             try{
                 hospitalDao.insert(hospital)
             } catch (e:Exception){
@@ -29,15 +29,15 @@ class HospitalRepository(application: Application) : ViewModel() {
             }
         }
     }
+
     fun deleteAllHospital(){
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             try{
                 hospitalDao.deleteAllHospital()
             }catch (e:Exception){
                 Log.d(TAG,e.toString())
             }
         }
-
     }
 
 }
