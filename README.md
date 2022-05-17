@@ -22,7 +22,7 @@ https://user-images.githubusercontent.com/14178811/168139358-34cded96-e95b-4c70-
 
 * Callback함수에 대한 이해
 
-* Coroutine과 함께하는 공공데이터 처리
+* [Coroutine과 비동기 데이터 처리의 순서](https://velog.io/@cksgodl/androidkotlin-%EC%BD%94%EB%A3%A8%ED%8B%B4%EC%9D%84-%EC%82%AC%EC%9A%A9%ED%95%9C-%EB%B9%84%EB%8F%99%EA%B8%B0%EC%9E%91%EC%97%85%EB%93%A4%EC%9D%98-%EC%88%9C%EC%84%9C%EB%A5%BC-%EC%A7%80%EC%A0%95%ED%95%B4%EB%B3%B4%EC%9E%90)
 
 * [XML 파싱 및 크롤링으로 데이터 가져오기](https://velog.io/@cksgodl/%EA%B3%B5%EA%B3%B5%EB%8D%B0%EC%9D%B4%ED%84%B0-XML-%ED%8C%8C%EC%8B%B1-%EB%B0%8F-%ED%81%AC%EB%A1%A4%EB%A7%81%EC%9C%BC%EB%A1%9C-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0)
 
