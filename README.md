@@ -28,11 +28,11 @@ https://user-images.githubusercontent.com/14178811/168139358-34cded96-e95b-4c70-
 
 * [RecyclerView 클릭 인터페이스 설정](https://velog.io/@cksgodl/RecyclerView-%EA%B0%81%EA%B0%81-%EC%95%84%EC%9D%B4%ED%85%9C%EB%A7%88%EB%8B%A4-%ED%81%B4%EB%A6%AD-%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EC%84%A4%EC%A0%95)
 
-* MPAndroidChart 다루기
+* [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart) 다루기
 
-* Mvvm Databinding에서 이벤트를 처리하기 위한 Event Wrapper 만들기
+* [Mvvm Databinding에서 이벤트를 처리하기 위한 Event Wrapper 만들기](https://velog.io/@cksgodl/mvvm-databinding%EC%9C%BC%EB%A1%9C-%EC%9D%B4%EB%B2%A4%ED%8A%B8%EC%B2%98%EB%A6%AC%EB%A5%BC-%EC%9C%84%ED%95%9C-Event-Wrapper-%EC%A7%80%EB%8F%84%EC%95%B1-%EC%97%B0%EB%8F%99-URL-SCheme)
 
-* 타앱과 연동을 위한 URL Scheme
+* [타앱과 연동을 위한 URL Scheme](https://velog.io/@cksgodl/Android-Kotlin-%ED%83%80%EC%95%B1%EA%B3%BC%EC%9D%98-%EC%97%B0%EB%8F%99%EC%9D%84-%EC%9C%84%ED%95%9C-URL-Scheme)
 
 * [Kotlin에서의 Generic이 무엇인가](https://velog.io/@cksgodl/Kotlin%EC%97%90%EC%84%9C-Generic%EA%B3%BC-type-parameter-T)
 
