@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
+import com.covidproject.covid_respiratorycare.CovidRespiratorycareApp
 import com.covidproject.covid_respiratorycare.R
 import com.covidproject.covid_respiratorycare.data.*
 import com.covidproject.covid_respiratorycare.data.datastore.DataStoreHospitalUpdate
@@ -20,6 +21,7 @@ import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_splash), MappingView,
     UpdateMapView {
@@ -50,7 +52,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
     override fun onMappingSuccess(hopitalList: List<HospitalInfo>) {
         hospitalViewModel.deleteAlldeleteAllHospital()
         for (i in hopitalList) {
-//            Log.d("병원", i.toString())
+            Log.d("병원", i.toString())
             hospitalViewModel.insert(i)
         }
         val intent = Intent(this, MainActivity::class.java)
@@ -65,17 +67,13 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
     override fun onUpdateMapLoading() {
     }
 
-    override fun onUpdateMapSuccess(date: String) {
-//        val spf = getSharedPreferences("DateInfo",MODE_PRIVATE)
-//        val spfdate = spf.getString("Update_date","no")
-//        GlobalScope
-
+    override suspend fun onUpdateMapSuccess(date: String) = CoroutineScope(Dispatchers.IO).launch {
+//        join() : Job의 실행이 끝날 때 까지 대기 (launch)
         var tempdate = ""
-        CoroutineScope(Dispatchers.IO).launch {
-            hospitalUpdateManager.text.collect(){
-                tempdate = it
-            }
+        val job = launch {
+            tempdate = CovidRespiratorycareApp.getInstance().getDataStore().text.first()
         }
+        job.join()
         if (date == tempdate) {
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this@SplashActivity, MainActivity::class.java)
@@ -85,12 +83,9 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
                 binding.splashLoadingTv.text = "최신 정보 업데이트 완료"
             }, 1000)
         } else {
-            CoroutineScope(Dispatchers.IO).launch {
                 mappingService.getHospitalInfo()
-                hospitalUpdateManager.setText(date)
-            }
+                CovidRespiratorycareApp.getInstance().getDataStore().setText(date)
         }
-
     }
 
     override fun onUpdateMapFailure(code: Int, message: String) {

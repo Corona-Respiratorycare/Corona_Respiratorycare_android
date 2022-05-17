@@ -1,12 +1,19 @@
 package com.covidproject.covid_respiratorycare.ui.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.covidproject.covid_respiratorycare.navernewsretrofit
 import com.covidproject.covid_respiratorycare.ui.Service.main.DaumNews
+import com.covidproject.covid_respiratorycare.ui.Service.main.MainRetrofitInterface
 import com.covidproject.covid_respiratorycare.ui.Service.main.NaverNews
+import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
+    val naveNewsService = navernewsretrofit.create(MainRetrofitInterface::class.java)
+
     // 전광판 쪽 데이터 누적 확진자, 신규 확진자, 지역 확진자, 외국 확진자
     private val _defCnt = MutableLiveData<String>()
     private val _incCnt = MutableLiveData<String>()
@@ -64,6 +71,18 @@ class MainViewModel : ViewModel() {
     fun updateScrollLocation(location: Pair<Int,Int>){
         _scrollLocation.value = location
     }
+
+    fun getCoronaNaverNews() {
+        viewModelScope.launch {
+            try {
+                val result = naveNewsService.getCoronaNaverNews("코로나")
+                _naverNews.value = result.navernews
+            } catch (throwable: Throwable) {
+                Log.d("GetNaverNews Error : ", throwable.message.toString())
+            }
+        }
+    }
+
 
     init{
         // 전광판 메뉴

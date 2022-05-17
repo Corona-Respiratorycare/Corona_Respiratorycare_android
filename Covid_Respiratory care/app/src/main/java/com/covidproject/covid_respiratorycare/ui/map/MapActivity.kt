@@ -43,9 +43,9 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
 
 //    lateinit var hospitalDB: HospitalDatabase
     private lateinit var naverMap: NaverMap
-
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     var usermarker = Marker()
+    private val TAG = "MapActivity"
 
     lateinit var userpositionThread : UserPositionThread
     private lateinit var mapViewModel: MapViewModel
@@ -65,6 +65,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         hostpitalViewModel = ViewModelProvider(this)[HospitalViewModel::class.java]
         binding.mapViewModel = mapViewModel
         binding.lifecycleOwner = this
+
 //        userpositionThread = UserPositionThread()
         // 네이버 지도 동기화
         binding.mapMapView.getMapAsync(this)
@@ -72,20 +73,9 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         // 현재위치 가져오기
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        // 전화 열기
+        // 전화 Intent 이벤트
         mapViewModel.telEvent.eventObserve(this) { it ->
-            Log.d(TAG,"이벤트 클릭")
-//            mapViewModel.updateuserposition(Pair(37.5674893,127.1783478))
-//            hostpitalViewModel.insert(HospitalInfo(2.0,2.0,"asd","asd",true,true,10,"asd","asd"))
              startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + it.replace("-", ""))))
-        }
-
-        // 왜 2번씩 실행이 될까용
-        // updateUserPosition이 되기전에 이게 실행되면 오류가 날 것 같음
-        hostpitalViewModel.getAll().observe(this){
-            Log.d(TAG,"이벤트 옵저버")
-            // 병원 정보 가져와서 찍기
-            setMarkerbyUserPosition(it)
         }
 
 //        mapViewModel.telEvent.observe(this) { event ->
@@ -243,7 +233,15 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         naverMap = p0
         naverMap.maxZoom = 18.0
         naverMap.minZoom = 10.0
+        
+        // 맵이 준비되면 현재 유저 위치 가져오기 
         getLastKnownLocation()
+        // updateUserPosition이 Update 된 후에 유저 근처 병원 마커찍기
+        hostpitalViewModel.getAll().observe(this){
+            // 병원 정보 가져와서 찍기
+            setMarkerbyUserPosition(it)
+        }
+
     }
 
     fun setUserPositionMarker(y : Double, x: Double){
@@ -343,7 +341,4 @@ class MapActivity : BaseActivity<ActivityMapBinding>(R.layout.activity_map), OnM
         }
     }
 
-    companion object {
-        private const val TAG = "MapActivity"
-    }
 }

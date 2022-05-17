@@ -1,6 +1,8 @@
 package com.covidproject.covid_respiratorycare.data.datastore
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -12,7 +14,11 @@ import java.io.IOException
 
 class DataStoreHospitalUpdate(val context : Context){
 
-    private val Context.dataStore  by preferencesDataStore(name = "dataStore")
+    // preferencesDataStore로 만든 속성 위임을 사용하여 Datastore<Preferences>의 인스턴스를 만듭니다.
+//    companion object{
+    private val Context.dataStore : DataStore<Preferences> by preferencesDataStore(name = "dataStore")
+//    }
+
     private val stringKey = stringPreferencesKey("update_day") // string 저장 키값
     
     // Flow : coroutines.flow import 해야됨

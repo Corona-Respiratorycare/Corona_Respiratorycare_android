@@ -1,6 +1,7 @@
 package com.covidproject.covid_respiratorycare.ui.Service.mapping
 
 import com.covidproject.covid_respiratorycare.data.HospitalInfo
+import kotlinx.coroutines.Job
 
 interface MappingView {
     fun onMappingLoading()
@@ -10,6 +11,6 @@ interface MappingView {
 
 interface UpdateMapView {
     fun onUpdateMapLoading()
-    fun onUpdateMapSuccess(date : String)
+    suspend fun onUpdateMapSuccess(date : String): Job
     fun onUpdateMapFailure(code:Int, message:String)
 }

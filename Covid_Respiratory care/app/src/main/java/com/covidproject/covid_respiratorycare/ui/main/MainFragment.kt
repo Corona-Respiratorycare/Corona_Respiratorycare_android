@@ -65,7 +65,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
         // 네이버 뉴스 Livedata가 업데이트 되면 어뎁터 설정
         mainViewModel.naverNews.observe(this, androidx.lifecycle.Observer {
             navernewsRvAdapter = mainViewModel.naverNews.value?.let { MainNaverNewsAdapter(it) }!!
-
             // 아이템 클릭 리스너 연결
             navernewsRvAdapter.setOnItemClickListener(object : MainNaverNewsAdapter.OnClickInterface{
                 override fun onItemClick(v: View, news: NaverNews, pos: Int) {
@@ -168,9 +167,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main), 
         CoroutineScope(Dispatchers.IO).launch {
             mainretrofitService.getSeoulCovidMain(now)
             mainretrofitService.getSeoulCovidDaily(before, now)
-            mainretrofitService.getCoronaNaverNews()
+//            mainretrofitService.getCoronaNaverNews()
             mainretrofitService.getCoronaDaumNews()
         }
+        mainViewModel.getCoronaNaverNews()
         
         // RecyclerView 레이아웃 매니저 설정
         val lm = LinearLayoutManager(requireContext())
